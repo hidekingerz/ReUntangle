@@ -2,10 +2,10 @@
 
 import type { ComponentInfo } from '@/types';
 
-interface DetailPanelProps {
+type DetailPanelProps = {
   component: ComponentInfo | null;
   onClose: () => void;
-}
+};
 
 export default function DetailPanel({ component, onClose }: DetailPanelProps) {
   if (!component) {

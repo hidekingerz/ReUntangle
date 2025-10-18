@@ -3,6 +3,7 @@ import type {
   DependencyGraph,
   DependencyNode,
   DependencyEdge,
+  ProjectMetrics,
 } from '@/types';
 import type { Node, Edge } from '@xyflow/react';
 import type { FlowNodeData } from '@/types';
@@ -71,6 +72,9 @@ export class GraphBuilder {
 
     // Calculate depths
     this.calculateDepths(nodes);
+
+    // Detect warnings
+    this.detectWarnings(nodes);
 
     return { nodes, edges };
   }
@@ -150,11 +154,13 @@ export class GraphBuilder {
   }
 
   /**
-   * Get node size based on complexity
+   * Get node size based on complexity and warnings
    */
-  private getNodeSize(complexity: number): number {
-    // Size range: 40px to 100px based on complexity
-    return 40 + (complexity / 100) * 60;
+  private getNodeSize(complexity: number, hasHighCoupling: boolean): number {
+    // Base size range: 40px to 100px based on complexity
+    const baseSize = 40 + (complexity / 100) * 60;
+    // Increase size by 30% for high coupling warning
+    return hasHighCoupling ? baseSize * 1.3 : baseSize;
   }
 
   /**
@@ -175,8 +181,25 @@ export class GraphBuilder {
       const isUnused = node.dependents.length === 0;
       const hasCircularDep = circularNodes.has(id);
       const isRoot = this.isRootComponent(node.component.filePath);
+      const hasDeepDependencyChain = node.warnings?.deepDependencyChain || false;
+      const hasHighCoupling = node.warnings?.highCoupling || false;
+
       const color = this.getNodeColor(node.complexity, isUnused, hasCircularDep, isRoot);
-      const size = this.getNodeSize(node.complexity);
+      const size = this.getNodeSize(node.complexity, hasHighCoupling);
+
+      // Determine border style based on warnings
+      let border = '2px solid #fff';
+      let boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+
+      if (hasCircularDep) {
+        border = '3px solid #dc2626'; // Red for circular dependency
+      } else if (hasDeepDependencyChain) {
+        border = '3px solid #eab308'; // Yellow for deep dependency chain
+        boxShadow = '0 0 0 2px #eab308, 0 4px 6px rgba(0, 0, 0, 0.1)';
+      } else if (hasHighCoupling) {
+        border = '3px solid #f97316'; // Orange for high coupling
+        boxShadow = '0 0 0 2px #f97316, 0 4px 6px rgba(0, 0, 0, 0.1)';
+      }
 
       flowNodes.push({
         id,
@@ -194,8 +217,8 @@ export class GraphBuilder {
           width: size,
           height: size,
           borderRadius: '50%',
-          border: hasCircularDep ? '3px solid #dc2626' : '2px solid #fff',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          border,
+          boxShadow,
           // Display complexity score inside the node
           display: 'flex',
           alignItems: 'center',
@@ -265,5 +288,79 @@ export class GraphBuilder {
     }
 
     return circularNodes;
+  }
+
+  /**
+   * Detect warnings for all nodes
+   */
+  private detectWarnings(nodes: Map<string, DependencyNode>): void {
+    for (const node of nodes.values()) {
+      node.warnings = {
+        deepDependencyChain: node.depth > 5,
+        highCoupling: node.dependents.length >= 10,
+        unused: node.dependents.length === 0 && !this.isRootComponent(node.component.filePath),
+      };
+    }
+  }
+
+  /**
+   * Calculate project metrics from dependency graph
+   */
+  calculateMetrics(graph: DependencyGraph): ProjectMetrics {
+    const components = Array.from(graph.nodes.values());
+    const circularNodes = this.detectCircularDependencies(graph);
+
+    // Total counts
+    const totalComponents = components.length;
+    const totalHooks = components.filter((node) => node.component.type === 'hook').length;
+
+    // Complexity metrics
+    const complexities = components.map((node) => node.complexity);
+    const averageComplexity =
+      complexities.reduce((sum, c) => sum + c, 0) / totalComponents || 0;
+    const maxComplexity = Math.max(...complexities, 0);
+    const minComplexity = Math.min(...complexities, 100);
+
+    // Top 10 complex components
+    const topComplexComponents = components
+      .sort((a, b) => b.complexity - a.complexity)
+      .slice(0, 10)
+      .map((node) => ({
+        name: node.component.name,
+        filePath: node.component.filePath,
+        complexity: node.complexity,
+      }));
+
+    // Most depended on (top 10)
+    const mostDependedOn = components
+      .sort((a, b) => b.dependents.length - a.dependents.length)
+      .slice(0, 10)
+      .map((node) => ({
+        name: node.component.name,
+        filePath: node.component.filePath,
+        dependentCount: node.dependents.length,
+      }));
+
+    // Complexity distribution
+    const complexityDistribution = {
+      simple: components.filter((node) => node.complexity <= 30).length,
+      standard: components.filter((node) => node.complexity > 30 && node.complexity <= 60)
+        .length,
+      complex: components.filter((node) => node.complexity > 60 && node.complexity <= 80)
+        .length,
+      veryComplex: components.filter((node) => node.complexity > 80).length,
+    };
+
+    return {
+      totalComponents,
+      totalHooks,
+      averageComplexity: Math.round(averageComplexity * 10) / 10,
+      maxComplexity,
+      minComplexity,
+      circularDependencies: circularNodes.size,
+      topComplexComponents,
+      mostDependedOn,
+      complexityDistribution,
+    };
   }
 }

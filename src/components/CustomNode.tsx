@@ -4,9 +4,9 @@ import { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import type { FlowNodeData } from '@/types';
 
-interface CustomNodeProps {
+type CustomNodeProps = {
   data: FlowNodeData;
-}
+};
 
 function CustomNode({ data }: CustomNodeProps) {
   return (

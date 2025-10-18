@@ -1,22 +1,26 @@
+'use client';
+
 import type { LayoutType } from '@/types';
 
-interface HeaderProps {
+type HeaderProps = {
   hasGraphData: boolean;
   layoutType: LayoutType;
   onLayoutChange: (layout: LayoutType) => void;
   onReset: () => void;
+  onShowMetrics?: () => void;
   stats: {
     projectName: string;
     filesScanned: number;
     componentsFound: number;
   } | null;
-}
+};
 
 export default function Header({
   hasGraphData,
   layoutType,
   onLayoutChange,
   onReset,
+  onShowMetrics,
   stats,
 }: HeaderProps) {
   return (
@@ -54,6 +58,16 @@ export default function Header({
                 Force Layout
               </button>
             </div>
+
+            {onShowMetrics && (
+              <button
+                onClick={onShowMetrics}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium
+                         hover:bg-green-700 transition-colors"
+              >
+                📊 Show Metrics
+              </button>
+            )}
 
             <button
               onClick={onReset}
