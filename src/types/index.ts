@@ -11,13 +11,13 @@ export interface FileInfo {
 }
 
 /**
- * Represents a React component found in the code
+ * Represents a React component or custom hook found in the code
  */
 export interface ComponentInfo {
   id: string;
   name: string;
   filePath: string;
-  type: 'function' | 'class' | 'arrow';
+  type: 'function' | 'class' | 'arrow' | 'hook';
   dependencies: string[]; // Component names this component depends on
   imports: ImportInfo[];
   complexity: number;

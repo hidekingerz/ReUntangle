@@ -115,18 +115,37 @@ export class GraphBuilder {
   }
 
   /**
+   * Check if a component is a root component (entry point)
+   * Root components are page.tsx, layout.tsx, or have no dependents but are actually used
+   */
+  private isRootComponent(filePath: string): boolean {
+    const fileName = filePath.split('/').pop() || '';
+    // Next.js App Router entry points
+    return fileName === 'page.tsx' || fileName === 'layout.tsx' || fileName === 'route.ts';
+  }
+
+  /**
    * Get node color based on complexity
+   * - Root: Purple (Entry points)
    * - 0-30: Green (Simple)
    * - 31-60: Blue (Standard)
    * - 61-80: Yellow (Complex)
-   * - 81-100: Red (Very Complex)
+   * - 81-100: Orange (Very Complex)
+   * - Circular: Red (Error)
+   * - Unused: Gray
    */
-  private getNodeColor(complexity: number, isUnused: boolean, hasCircularDep: boolean): string {
+  private getNodeColor(
+    complexity: number,
+    isUnused: boolean,
+    hasCircularDep: boolean,
+    isRoot: boolean
+  ): string {
     if (hasCircularDep) return '#ef4444'; // Red for circular dependency
+    if (isRoot) return '#8b5cf6'; // Purple for root components (distinct from green)
     if (isUnused) return '#9ca3af'; // Gray for unused
-    if (complexity <= 30) return '#22c55e'; // Green
-    if (complexity <= 60) return '#3b82f6'; // Blue
-    if (complexity <= 80) return '#eab308'; // Yellow
+    if (complexity <= 30) return '#22c55e'; // Green (simple)
+    if (complexity <= 60) return '#3b82f6'; // Blue (standard)
+    if (complexity <= 80) return '#eab308'; // Yellow (complex)
     return '#f97316'; // Orange for very complex
   }
 
@@ -155,7 +174,8 @@ export class GraphBuilder {
     for (const [id, node] of graph.nodes) {
       const isUnused = node.dependents.length === 0;
       const hasCircularDep = circularNodes.has(id);
-      const color = this.getNodeColor(node.complexity, isUnused, hasCircularDep);
+      const isRoot = this.isRootComponent(node.component.filePath);
+      const color = this.getNodeColor(node.complexity, isUnused, hasCircularDep, isRoot);
       const size = this.getNodeSize(node.complexity);
 
       flowNodes.push({

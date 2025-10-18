@@ -21,16 +21,21 @@ export class ComponentParser {
 
       for (const data of componentData) {
         const hooks = this.extractHooks(data.body);
+        const customHookCalls = this.extractCustomHookCalls(data.body);
         const propsInfo = this.extractPropsInfo(ast, data.name, fileInfo.extension);
         const linesOfCode = this.calculateLinesOfCode(data.body);
         const externalLibraryCount = this.countExternalLibraries(imports);
+
+        // Combine import-based dependencies and custom hook calls
+        const importDeps = this.extractDependencies(data.name, imports);
+        const allDependencies = [...new Set([...importDeps, ...customHookCalls])];
 
         components.push({
           id: `${fileInfo.path}:${data.name}`,
           name: data.name,
           filePath: fileInfo.path,
           type: data.type,
-          dependencies: this.extractDependencies(data.name, imports),
+          dependencies: allDependencies,
           imports,
           linesOfCode,
           hooks,
@@ -38,7 +43,7 @@ export class ComponentParser {
           propsInfo,
           complexity: this.calculateComplexity({
             linesOfCode,
-            dependencyCount: this.extractDependencies(data.name, imports).length,
+            dependencyCount: allDependencies.length,
             hooksCount: hooks.reduce((sum, h) => sum + h.count, 0),
             propsCount: propsInfo?.properties.length || 0,
             externalLibraryCount,
@@ -129,15 +134,16 @@ export class ComponentParser {
       body: unknown;
     }> = [];
     const isPotentialComponent = this.isPotentialComponent.bind(this);
+    const isCustomHook = this.isCustomHook.bind(this);
 
     traverse(ast, {
-      // Function declarations: function MyComponent() {}
+      // Function declarations: function MyComponent() {} or function useMyHook() {}
       FunctionDeclaration(path) {
         const name = path.node.id?.name;
         if (name && isPotentialComponent(name)) {
           components.push({
             name,
-            type: 'function',
+            type: isCustomHook(name) ? 'hook' : 'function',
             body: path.node.body,
           });
         }
@@ -151,20 +157,22 @@ export class ComponentParser {
           return;
         }
 
-        // Arrow function: const MyComponent = () => {}
+        const isHook = isCustomHook(name);
+
+        // Arrow function: const MyComponent = () => {} or const useMyHook = () => {}
         if (path.node.init?.type === 'ArrowFunctionExpression') {
           components.push({
             name,
-            type: 'arrow',
+            type: isHook ? 'hook' : 'arrow',
             body: path.node.init.body,
           });
         }
 
-        // Function expression: const MyComponent = function() {}
+        // Function expression: const MyComponent = function() {} or const useMyHook = function() {}
         if (path.node.init?.type === 'FunctionExpression') {
           components.push({
             name,
-            type: 'function',
+            type: isHook ? 'hook' : 'function',
             body: path.node.init.body,
           });
         }
@@ -187,10 +195,21 @@ export class ComponentParser {
   }
 
   /**
-   * Check if a name is potentially a React component (PascalCase)
+   * Check if a name is potentially a React component (PascalCase) or custom hook (use*)
    */
   private isPotentialComponent(name: string): boolean {
-    return /^[A-Z][a-zA-Z0-9]*$/.test(name);
+    // React components: PascalCase (e.g., MyComponent)
+    const isComponent = /^[A-Z][a-zA-Z0-9]*$/.test(name);
+    // Custom hooks: start with 'use' followed by uppercase letter (e.g., useMyHook)
+    const isCustomHook = /^use[A-Z][a-zA-Z0-9]*$/.test(name);
+    return isComponent || isCustomHook;
+  }
+
+  /**
+   * Check if a name is a custom hook (starts with 'use')
+   */
+  private isCustomHook(name: string): boolean {
+    return /^use[A-Z][a-zA-Z0-9]*$/.test(name);
   }
 
   /**
@@ -206,6 +225,50 @@ export class ComponentParser {
     }
 
     return dependencies.filter((dep) => dep !== componentName);
+  }
+
+  /**
+   * Extract custom hook calls from component body
+   * This finds all calls to functions starting with 'use' (e.g., useMyHook())
+   */
+  private extractCustomHookCalls(body: unknown): string[] {
+    const hookCalls = new Set<string>();
+
+    if (!body || typeof body !== 'object') {
+      return [];
+    }
+
+    // Create a minimal AST wrapper for traversal
+    const fakeFile = {
+      type: 'File' as const,
+      program: {
+        type: 'Program' as const,
+        body: [body as t.Statement],
+        directives: [],
+        sourceType: 'module' as const,
+        interpreter: null,
+        sourceFile: '',
+      },
+      comments: null,
+      tokens: null,
+    };
+
+    const isCustomHook = this.isCustomHook.bind(this);
+
+    traverse(fakeFile, {
+      CallExpression(path) {
+        // Check if the callee is an identifier (direct function call)
+        if (t.isIdentifier(path.node.callee)) {
+          const hookName = path.node.callee.name;
+          // Only include custom hooks (not built-in React hooks)
+          if (isCustomHook(hookName)) {
+            hookCalls.add(hookName);
+          }
+        }
+      },
+    });
+
+    return Array.from(hookCalls);
   }
 
   /**
