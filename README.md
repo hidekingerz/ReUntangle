@@ -1,5 +1,7 @@
 # ReUntangle
 
+<img width="2116" height="1386" alt="screenshot" src="https://github.com/user-attachments/assets/efe13f53-51eb-445e-af9f-193a347d413f" />
+
 **Visualize and untangle React component dependencies**
 
 ReUntangleは、Reactプロジェクトのコンポーネントとカスタムフックの依存関係を可視化し、複雑度を分析するツールです。
