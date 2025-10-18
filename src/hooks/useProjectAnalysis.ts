@@ -5,12 +5,12 @@ import { GraphBuilder } from '@/lib/graph/graphBuilder';
 import type { Node, Edge } from '@xyflow/react';
 import type { FlowNodeData } from '@/types';
 
-interface AnalysisResult {
+type AnalysisResult = {
   nodes: Node<FlowNodeData>[];
   edges: Edge[];
   filesScanned: number;
   componentsFound: number;
-}
+};
 
 export function useProjectAnalysis() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);

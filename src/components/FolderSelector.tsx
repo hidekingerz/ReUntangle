@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 
-interface FolderSelectorProps {
+type FolderSelectorProps = {
   onFolderSelected: (directoryHandle: FileSystemDirectoryHandle) => void;
   isLoading?: boolean;
-}
+};
 
 export default function FolderSelector({
   onFolderSelected,

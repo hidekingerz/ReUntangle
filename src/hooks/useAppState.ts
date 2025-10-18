@@ -2,15 +2,15 @@ import { useState, useCallback } from 'react';
 import type { Node, Edge } from '@xyflow/react';
 import type { FlowNodeData, LayoutType, ComponentInfo } from '@/types';
 
-interface GraphData {
+type GraphData = {
   nodes: Node<FlowNodeData>[];
   edges: Edge[];
-}
+};
 
-interface Stats {
+type Stats = {
   filesScanned: number;
   componentsFound: number;
-}
+};
 
 export function useAppState() {
   const [graphData, setGraphData] = useState<GraphData | null>(null);

@@ -7,12 +7,12 @@ import { useGraphLayout } from '@/hooks/useGraphLayout';
 import { useNodeClickHandler } from '@/hooks/useNodeClickHandler';
 import { ReactFlowWrapper } from './GraphView/ReactFlowWrapper';
 
-interface GraphViewProps {
+type GraphViewProps = {
   nodes: Node<FlowNodeData>[];
   edges: Edge[];
   layoutType: LayoutType;
   onNodeClick?: (nodeId: string) => void;
-}
+};
 
 export default function GraphView({
   nodes: initialNodes,

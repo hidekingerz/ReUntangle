@@ -6,13 +6,13 @@ import type { FlowNodeData } from '@/types';
 import { nodeTypes } from './nodeTypes';
 import { REACT_FLOW_CONFIG, MINIMAP_CONFIG } from './constants';
 
-interface ReactFlowWrapperProps {
+type ReactFlowWrapperProps = {
   nodes: Node<FlowNodeData>[];
   edges: Edge[];
   onNodesChange: OnNodesChange<Node<FlowNodeData>>;
   onEdgesChange: OnEdgesChange;
   onNodeClick: (event: React.MouseEvent, node: Node<FlowNodeData>) => void;
-}
+};
 
 export function ReactFlowWrapper({
   nodes,

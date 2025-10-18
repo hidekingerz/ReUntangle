@@ -1,6 +1,6 @@
 import type { LayoutType } from '@/types';
 
-interface HeaderProps {
+type HeaderProps = {
   hasGraphData: boolean;
   layoutType: LayoutType;
   onLayoutChange: (layout: LayoutType) => void;
@@ -10,7 +10,7 @@ interface HeaderProps {
     filesScanned: number;
     componentsFound: number;
   } | null;
-}
+};
 
 export default function Header({
   hasGraphData,
