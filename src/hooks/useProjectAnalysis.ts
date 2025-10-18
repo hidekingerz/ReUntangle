@@ -3,13 +3,14 @@ import { scanDirectory } from '@/lib/fileSystem';
 import { ComponentParser } from '@/lib/parser/componentParser';
 import { GraphBuilder } from '@/lib/graph/graphBuilder';
 import type { Node, Edge } from '@xyflow/react';
-import type { FlowNodeData } from '@/types';
+import type { FlowNodeData, ProjectMetrics } from '@/types';
 
 type AnalysisResult = {
   nodes: Node<FlowNodeData>[];
   edges: Edge[];
   filesScanned: number;
   componentsFound: number;
+  metrics: ProjectMetrics;
 };
 
 export function useProjectAnalysis() {
@@ -36,12 +37,14 @@ export function useProjectAnalysis() {
         const graphBuilder = new GraphBuilder();
         const graph = graphBuilder.buildGraph(allComponents);
         const flowGraph = graphBuilder.buildReactFlowGraph(graph);
+        const metrics = graphBuilder.calculateMetrics(graph);
 
         return {
           nodes: flowGraph.nodes,
           edges: flowGraph.edges,
           filesScanned: files.length,
           componentsFound: allComponents.length,
+          metrics,
         };
       } finally {
         setIsAnalyzing(false);

@@ -3,6 +3,7 @@ import type {
   DependencyGraph,
   DependencyNode,
   DependencyEdge,
+  ProjectMetrics,
 } from '@/types';
 import type { Node, Edge } from '@xyflow/react';
 import type { FlowNodeData } from '@/types';
@@ -265,5 +266,66 @@ export class GraphBuilder {
     }
 
     return circularNodes;
+  }
+
+  /**
+   * Calculate project metrics from dependency graph
+   */
+  calculateMetrics(graph: DependencyGraph): ProjectMetrics {
+    const components = Array.from(graph.nodes.values());
+    const circularNodes = this.detectCircularDependencies(graph);
+
+    // Total counts
+    const totalComponents = components.length;
+    const totalHooks = components.filter((node) => node.component.type === 'hook').length;
+
+    // Complexity metrics
+    const complexities = components.map((node) => node.complexity);
+    const averageComplexity =
+      complexities.reduce((sum, c) => sum + c, 0) / totalComponents || 0;
+    const maxComplexity = Math.max(...complexities, 0);
+    const minComplexity = Math.min(...complexities, 100);
+
+    // Top 10 complex components
+    const topComplexComponents = components
+      .sort((a, b) => b.complexity - a.complexity)
+      .slice(0, 10)
+      .map((node) => ({
+        name: node.component.name,
+        filePath: node.component.filePath,
+        complexity: node.complexity,
+      }));
+
+    // Most depended on (top 10)
+    const mostDependedOn = components
+      .sort((a, b) => b.dependents.length - a.dependents.length)
+      .slice(0, 10)
+      .map((node) => ({
+        name: node.component.name,
+        filePath: node.component.filePath,
+        dependentCount: node.dependents.length,
+      }));
+
+    // Complexity distribution
+    const complexityDistribution = {
+      simple: components.filter((node) => node.complexity <= 30).length,
+      standard: components.filter((node) => node.complexity > 30 && node.complexity <= 60)
+        .length,
+      complex: components.filter((node) => node.complexity > 60 && node.complexity <= 80)
+        .length,
+      veryComplex: components.filter((node) => node.complexity > 80).length,
+    };
+
+    return {
+      totalComponents,
+      totalHooks,
+      averageComplexity: Math.round(averageComplexity * 10) / 10,
+      maxComplexity,
+      minComplexity,
+      circularDependencies: circularNodes.size,
+      topComplexComponents,
+      mostDependedOn,
+      complexityDistribution,
+    };
   }
 }
