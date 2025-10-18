@@ -168,13 +168,14 @@ type GraphViewProps = {
 
 **実装**:
 ```typescript
-import ReactFlow, {
+import {
+  ReactFlow,
   Background,
   Controls,
   MiniMap,
   useNodesState,
   useEdgesState
-} from 'reactflow';
+} from '@xyflow/react';
 
 const GraphView: React.FC<GraphViewProps> = ({
   nodes: initialNodes,

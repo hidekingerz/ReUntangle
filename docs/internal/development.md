@@ -10,11 +10,11 @@
 ### 1.1 必要な環境
 
 **Node.js**:
-- バージョン: 18.x 以上
-- 推奨: 20.x (LTS)
+- バージョン: 22.x 以上
+- 推奨: 22.x (LTS)
 
 **パッケージマネージャー**:
-- npm 9.x 以上
+- npm 10.x 以上
 - または yarn 1.22.x 以上
 - または pnpm 8.x 以上
 
@@ -46,21 +46,22 @@ npm install
 ```json
 {
   "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "reactflow": "^11.0.0",
-    "@babel/parser": "^7.23.0",
-    "@babel/traverse": "^7.23.0",
-    "@babel/types": "^7.23.0"
+    "next": "15.5.3",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "@xyflow/react": "12.8.4",
+    "@babel/parser": "^7.25.0",
+    "@babel/traverse": "^7.25.0",
+    "@babel/types": "^7.25.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "tailwindcss": "^3.3.0",
-    "@types/react": "^18.2.0",
-    "@types/node": "^20.0.0",
-    "eslint": "^8.50.0",
-    "prettier": "^3.0.0"
+    "typescript": "^5.9.0",
+    "tailwindcss": "^3.4.0",
+    "@types/react": "^19.0.0",
+    "@types/node": "^20.16.0",
+    "eslint": "9.35.0",
+    "prettier": "^3.6.0",
+    "vitest": "3.2.4"
   }
 }
 ```
@@ -323,21 +324,30 @@ import './styles.css';
 
 ### 4.2 テストフレームワーク
 
-**Jest + React Testing Library**:
+**Vitest + React Testing Library**:
 ```bash
-npm install --save-dev jest @testing-library/react @testing-library/jest-dom
+npm install --save-dev vitest @vitest/ui @testing-library/react @testing-library/jest-dom
 ```
 
-**設定ファイル** (`jest.config.js`):
-```javascript
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
+**設定ファイル** (`vitest.config.ts`):
+```typescript
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
+    globals: true,
   },
-};
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+});
 ```
 
 ---
@@ -348,15 +358,16 @@ module.exports = {
 ```typescript
 // lib/parser/componentParser.test.ts
 
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentParser } from './componentParser';
 
 describe('ComponentParser', () => {
   let parser: ComponentParser;
-  
+
   beforeEach(() => {
     parser = new ComponentParser();
   });
-  
+
   describe('parseCode', () => {
     it('should parse function component', () => {
       const code = `
@@ -364,13 +375,13 @@ describe('ComponentParser', () => {
           return <div>Hello</div>;
         }
       `;
-      
+
       const result = parser.parseCode(code);
-      
+
       expect(result.name).toBe('MyComponent');
       expect(result.type).toBe('function');
     });
-    
+
     it('should parse arrow function component', () => {
       const code = `
         const MyComponent = () => {
