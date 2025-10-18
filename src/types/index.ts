@@ -72,6 +72,12 @@ export type DependencyNode = {
   dependents: string[]; // IDs of components that depend on this
   depth: number;
   complexity: number;
+  warnings?: {
+    deepDependencyChain?: boolean; // depth > 5
+    highCoupling?: boolean; // dependents.length >= 10
+    circularDependency?: boolean; // part of circular dependency
+    unused?: boolean; // no dependents
+  };
 };
 
 /**
