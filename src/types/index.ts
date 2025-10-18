@@ -21,6 +21,36 @@ export interface ComponentInfo {
   dependencies: string[]; // Component names this component depends on
   imports: ImportInfo[];
   complexity: number;
+  linesOfCode: number;
+  hooks: HookUsage[];
+  propsCount: number;
+  propsInfo?: PropsInfo; // TypeScript only
+}
+
+/**
+ * Represents a React Hook usage
+ */
+export interface HookUsage {
+  name: string;
+  count: number;
+}
+
+/**
+ * Represents Props information (TypeScript)
+ */
+export interface PropsInfo {
+  name: string; // Type name
+  properties: PropProperty[];
+}
+
+/**
+ * Represents a single prop property
+ */
+export interface PropProperty {
+  name: string;
+  type: string;
+  required: boolean;
+  defaultValue?: string;
 }
 
 /**

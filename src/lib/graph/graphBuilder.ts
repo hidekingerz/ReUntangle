@@ -115,6 +115,30 @@ export class GraphBuilder {
   }
 
   /**
+   * Get node color based on complexity
+   * - 0-30: Green (Simple)
+   * - 31-60: Blue (Standard)
+   * - 61-80: Yellow (Complex)
+   * - 81-100: Red (Very Complex)
+   */
+  private getNodeColor(complexity: number, isUnused: boolean, hasCircularDep: boolean): string {
+    if (hasCircularDep) return '#ef4444'; // Red for circular dependency
+    if (isUnused) return '#9ca3af'; // Gray for unused
+    if (complexity <= 30) return '#22c55e'; // Green
+    if (complexity <= 60) return '#3b82f6'; // Blue
+    if (complexity <= 80) return '#eab308'; // Yellow
+    return '#f97316'; // Orange for very complex
+  }
+
+  /**
+   * Get node size based on complexity
+   */
+  private getNodeSize(complexity: number): number {
+    // Size range: 40px to 100px based on complexity
+    return 40 + (complexity / 100) * 60;
+  }
+
+  /**
    * Convert dependency graph to React Flow format
    */
   buildReactFlowGraph(graph: DependencyGraph): {
@@ -124,18 +148,41 @@ export class GraphBuilder {
     const flowNodes: Node<FlowNodeData>[] = [];
     const flowEdges: Edge[] = [];
 
+    // Detect circular dependencies
+    const circularNodes = this.detectCircularDependencies(graph);
+
     // Create nodes
     for (const [id, node] of graph.nodes) {
+      const isUnused = node.dependents.length === 0;
+      const hasCircularDep = circularNodes.has(id);
+      const color = this.getNodeColor(node.complexity, isUnused, hasCircularDep);
+      const size = this.getNodeSize(node.complexity);
+
       flowNodes.push({
         id,
         type: 'default',
         position: { x: 0, y: 0 }, // Will be set by layout algorithm
         data: {
-          label: node.component.name,
+          label: '', // Empty label - we'll use a custom label below the node
           componentInfo: node.component,
           complexity: node.complexity,
           dependencyCount: node.dependencies.length,
           dependentCount: node.dependents.length,
+        },
+        style: {
+          backgroundColor: color,
+          width: size,
+          height: size,
+          borderRadius: '50%',
+          border: hasCircularDep ? '3px solid #dc2626' : '2px solid #fff',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          // Display complexity score inside the node
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontSize: '11px',
+          fontWeight: 'bold',
         },
       });
     }
@@ -149,10 +196,54 @@ export class GraphBuilder {
         animated: edge.strength > 1,
         style: {
           strokeWidth: Math.min(edge.strength, 5),
+          stroke: '#94a3b8',
         },
       });
     }
 
     return { nodes: flowNodes, edges: flowEdges };
+  }
+
+  /**
+   * Detect circular dependencies using DFS
+   */
+  private detectCircularDependencies(graph: DependencyGraph): Set<string> {
+    const circularNodes = new Set<string>();
+    const visited = new Set<string>();
+    const recursionStack = new Set<string>();
+
+    const dfs = (nodeId: string): boolean => {
+      if (recursionStack.has(nodeId)) {
+        // Found a cycle
+        circularNodes.add(nodeId);
+        return true;
+      }
+      if (visited.has(nodeId)) {
+        return false;
+      }
+
+      visited.add(nodeId);
+      recursionStack.add(nodeId);
+
+      const node = graph.nodes.get(nodeId);
+      if (node) {
+        for (const depId of node.dependencies) {
+          if (dfs(depId)) {
+            circularNodes.add(nodeId);
+          }
+        }
+      }
+
+      recursionStack.delete(nodeId);
+      return false;
+    };
+
+    for (const nodeId of graph.nodes.keys()) {
+      if (!visited.has(nodeId)) {
+        dfs(nodeId);
+      }
+    }
+
+    return circularNodes;
   }
 }

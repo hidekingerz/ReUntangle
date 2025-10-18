@@ -3,11 +3,12 @@
 import { useState, useCallback } from 'react';
 import FolderSelector from '@/components/FolderSelector';
 import GraphView from '@/components/GraphView';
+import DetailPanel from '@/components/DetailPanel';
 import { scanDirectory } from '@/lib/fileSystem';
 import { ComponentParser } from '@/lib/parser/componentParser';
 import { GraphBuilder } from '@/lib/graph/graphBuilder';
 import type { Node, Edge } from '@xyflow/react';
-import type { FlowNodeData, LayoutType } from '@/types';
+import type { FlowNodeData, LayoutType, ComponentInfo } from '@/types';
 
 export default function Home() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -21,6 +22,7 @@ export default function Home() {
     filesScanned: number;
     componentsFound: number;
   } | null>(null);
+  const [selectedComponent, setSelectedComponent] = useState<ComponentInfo | null>(null);
 
   const handleFolderSelected = useCallback(
     async (directoryHandle: FileSystemDirectoryHandle) => {
@@ -68,6 +70,21 @@ export default function Home() {
     setGraphData(null);
     setStats(null);
     setProjectName('');
+    setSelectedComponent(null);
+  };
+
+  const handleNodeClick = useCallback(
+    (nodeId: string) => {
+      const node = graphData?.nodes.find((n) => n.id === nodeId);
+      if (node) {
+        setSelectedComponent(node.data.componentInfo);
+      }
+    },
+    [graphData]
+  );
+
+  const handleClosePanel = () => {
+    setSelectedComponent(null);
   };
 
   return (
@@ -143,18 +160,24 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden flex">
         {!graphData ? (
           <FolderSelector
             onFolderSelected={handleFolderSelected}
             isLoading={isAnalyzing}
           />
         ) : (
-          <GraphView
-            nodes={graphData.nodes}
-            edges={graphData.edges}
-            layoutType={layoutType}
-          />
+          <>
+            <div className="flex-1">
+              <GraphView
+                nodes={graphData.nodes}
+                edges={graphData.edges}
+                layoutType={layoutType}
+                onNodeClick={handleNodeClick}
+              />
+            </div>
+            <DetailPanel component={selectedComponent} onClose={handleClosePanel} />
+          </>
         )}
       </div>
     </main>

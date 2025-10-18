@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import {
   ReactFlow,
   Background,
@@ -12,6 +12,7 @@ import {
   type Edge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import CustomNode from './CustomNode';
 import type { FlowNodeData, LayoutType } from '@/types';
 import { applyLayout } from '@/lib/graph/layoutAlgorithm';
 
@@ -53,16 +54,27 @@ export default function GraphView({
     [onNodeClick]
   );
 
+  // Define custom node types
+  const nodeTypes = useMemo(
+    () => ({
+      default: CustomNode,
+    }),
+    []
+  );
+
   return (
     <div className="w-full h-full bg-gray-50">
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={handleNodeClick}
         fitView
         attributionPosition="bottom-left"
+        minZoom={0.1}
+        maxZoom={2}
       >
         <Background />
         <Controls />
