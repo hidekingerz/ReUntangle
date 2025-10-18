@@ -173,6 +173,30 @@ export type ProjectMetrics = {
 };
 
 /**
+ * Search and filter options
+ */
+export type SearchOptions = {
+  query: string;
+  searchIn: 'name' | 'path' | 'both';
+  useRegex: boolean;
+};
+
+export type FilterOptions = {
+  complexityRange: {
+    min: number;
+    max: number;
+  };
+  depthRange: {
+    min: number;
+    max: number;
+  };
+  componentTypes: Array<'function' | 'class' | 'arrow' | 'hook'>;
+  fileExtensions: Array<'.tsx' | '.jsx' | '.ts' | '.js'>;
+  showUnused: boolean;
+  showCircular: boolean;
+};
+
+/**
  * File System Access API types
  */
 declare global {

@@ -1,6 +1,13 @@
 import { useState, useCallback } from 'react';
 import type { Node, Edge } from '@xyflow/react';
-import type { FlowNodeData, LayoutType, ComponentInfo, ProjectMetrics } from '@/types';
+import type {
+  FlowNodeData,
+  LayoutType,
+  ComponentInfo,
+  ProjectMetrics,
+  SearchOptions,
+  FilterOptions,
+} from '@/types';
 
 type GraphData = {
   nodes: Node<FlowNodeData>[];
@@ -19,6 +26,19 @@ export function useAppState() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [metrics, setMetrics] = useState<ProjectMetrics | null>(null);
   const [selectedComponent, setSelectedComponent] = useState<ComponentInfo | null>(null);
+  const [searchOptions, setSearchOptions] = useState<SearchOptions>({
+    query: '',
+    searchIn: 'both',
+    useRegex: false,
+  });
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    complexityRange: { min: 0, max: 100 },
+    depthRange: { min: 0, max: 100 },
+    componentTypes: [],
+    fileExtensions: [],
+    showUnused: true,
+    showCircular: true,
+  });
 
   const updateAnalysisResult = useCallback(
     (name: string, data: GraphData, analysisStats: Stats, projectMetrics: ProjectMetrics) => {
@@ -26,6 +46,21 @@ export function useAppState() {
       setGraphData(data);
       setStats(analysisStats);
       setMetrics(projectMetrics);
+      // Reset filters with new max values
+      setFilterOptions({
+        complexityRange: { min: 0, max: projectMetrics.maxComplexity },
+        depthRange: { min: 0, max: 100 },
+        componentTypes: [],
+        fileExtensions: [],
+        showUnused: true,
+        showCircular: true,
+      });
+      // Reset search
+      setSearchOptions({
+        query: '',
+        searchIn: 'both',
+        useRegex: false,
+      });
     },
     []
   );
@@ -36,6 +71,15 @@ export function useAppState() {
     setMetrics(null);
     setProjectName('');
     setSelectedComponent(null);
+    setSearchOptions({ query: '', searchIn: 'both', useRegex: false });
+    setFilterOptions({
+      complexityRange: { min: 0, max: 100 },
+      depthRange: { min: 0, max: 100 },
+      componentTypes: [],
+      fileExtensions: [],
+      showUnused: true,
+      showCircular: true,
+    });
   }, []);
 
   const selectComponent = useCallback(
@@ -60,8 +104,12 @@ export function useAppState() {
     stats,
     metrics,
     selectedComponent,
+    searchOptions,
+    filterOptions,
     // Actions
     setLayoutType,
+    setSearchOptions,
+    setFilterOptions,
     updateAnalysisResult,
     reset,
     selectComponent,
