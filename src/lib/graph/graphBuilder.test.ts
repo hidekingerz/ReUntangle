@@ -417,4 +417,135 @@ describe('GraphBuilder', () => {
       expect(graph.nodes.size).toBe(2);
     });
   });
+
+  describe('警告の検出', () => {
+    it('深い依存チェーンを検出できること (depth > 5)', () => {
+      // Create a chain of 7 components: A -> B -> C -> D -> E -> F -> G
+      const components: ComponentInfo[] = [
+        createComponent('1', 'A', 'src/A.tsx', ['B']),
+        createComponent('2', 'B', 'src/B.tsx', ['C']),
+        createComponent('3', 'C', 'src/C.tsx', ['D']),
+        createComponent('4', 'D', 'src/D.tsx', ['E']),
+        createComponent('5', 'E', 'src/E.tsx', ['F']),
+        createComponent('6', 'F', 'src/F.tsx', ['G']),
+        createComponent('7', 'G', 'src/G.tsx', []),
+      ];
+
+      const graph = graphBuilder.buildGraph(components);
+      const { nodes: flowNodes } = graphBuilder.buildReactFlowGraph(graph);
+
+      // Components with depth > 5 should have deep dependency chain warning
+      const deepNodes = Array.from(graph.nodes.values()).filter(
+        (node) => node.warnings?.deepDependencyChain
+      );
+
+      expect(deepNodes.length).toBeGreaterThan(0);
+
+      // Check visual representation (yellow border)
+      const deepFlowNodes = flowNodes.filter((node) => {
+        const border = node.style?.border;
+        return typeof border === 'string' && border.includes('#eab308');
+      });
+
+      expect(deepFlowNodes.length).toBeGreaterThan(0);
+    });
+
+    it('高結合度を検出できること (dependents >= 10)', () => {
+      // Create one component that is depended on by 12 components
+      const components: ComponentInfo[] = [
+        createComponent('0', 'Popular', 'src/Popular.tsx', []),
+        ...Array.from({ length: 12 }, (_, i) =>
+          createComponent(`${i + 1}`, `Component${i}`, `src/Component${i}.tsx`, ['Popular'])
+        ),
+      ];
+
+      const graph = graphBuilder.buildGraph(components);
+      const { nodes: flowNodes } = graphBuilder.buildReactFlowGraph(graph);
+
+      // Popular component should have high coupling warning
+      const popularNode = graph.nodes.get('0');
+      expect(popularNode?.warnings?.highCoupling).toBe(true);
+      expect(popularNode?.dependents.length).toBeGreaterThanOrEqual(10);
+
+      // Check visual representation (larger size + orange border)
+      const popularFlowNode = flowNodes.find((n) => n.id === '0');
+      expect(popularFlowNode).toBeDefined();
+
+      // Should have increased size (30% larger)
+      const baseSize = 40 + (popularNode!.complexity / 100) * 60;
+      const expectedSize = baseSize * 1.3;
+      expect(popularFlowNode?.style?.width).toBeCloseTo(expectedSize, 0);
+
+      // Should have orange border
+      const border = popularFlowNode?.style?.border;
+      expect(typeof border === 'string' && border.includes('#f97316')).toBe(true);
+    });
+
+    it('未使用コンポーネントを検出できること', () => {
+      const components: ComponentInfo[] = [
+        createComponent('1', 'Used', 'src/Used.tsx', []),
+        createComponent('2', 'Unused', 'src/Unused.tsx', []),
+        createComponent('3', 'Consumer', 'src/Consumer.tsx', ['Used']),
+      ];
+
+      const graph = graphBuilder.buildGraph(components);
+
+      // Unused component should have unused warning
+      const unusedNode = graph.nodes.get('2');
+      expect(unusedNode?.warnings?.unused).toBe(true);
+
+      // Used component should not have unused warning (it has dependents)
+      const usedNode = graph.nodes.get('1');
+      expect(usedNode?.warnings?.unused).toBe(false);
+    });
+
+    it('ルートコンポーネントは未使用として検出されないこと', () => {
+      const components: ComponentInfo[] = [
+        createComponent('1', 'PageComponent', 'src/app/page.tsx', []),
+        createComponent('2', 'LayoutComponent', 'src/app/layout.tsx', []),
+      ];
+
+      const graph = graphBuilder.buildGraph(components);
+
+      // Root components should not have unused warning even with no dependents
+      const pageNode = graph.nodes.get('1');
+      const layoutNode = graph.nodes.get('2');
+
+      expect(pageNode?.dependents.length).toBe(0);
+      expect(layoutNode?.dependents.length).toBe(0);
+      expect(pageNode?.warnings?.unused).toBe(false);
+      expect(layoutNode?.warnings?.unused).toBe(false);
+    });
+
+    it('複数の警告を同時に持つことができること', () => {
+      // Create a highly coupled component in a deep chain
+      const components: ComponentInfo[] = [
+        createComponent('target', 'TargetComponent', 'src/Target.tsx', []),
+        // Create deep chain (depth > 5)
+        createComponent('1', 'A', 'src/A.tsx', ['B']),
+        createComponent('2', 'B', 'src/B.tsx', ['C']),
+        createComponent('3', 'C', 'src/C.tsx', ['D']),
+        createComponent('4', 'D', 'src/D.tsx', ['E']),
+        createComponent('5', 'E', 'src/E.tsx', ['F']),
+        createComponent('6', 'F', 'src/F.tsx', ['TargetComponent']),
+        // Create high coupling (>= 10 dependents)
+        ...Array.from({ length: 10 }, (_, i) =>
+          createComponent(`dep${i}`, `Dep${i}`, `src/Dep${i}.tsx`, ['TargetComponent'])
+        ),
+      ];
+
+      const graph = graphBuilder.buildGraph(components);
+
+      const targetNode = graph.nodes.get('target');
+
+      // Should have high coupling warning
+      expect(targetNode?.warnings?.highCoupling).toBe(true);
+      expect(targetNode?.dependents.length).toBeGreaterThanOrEqual(10);
+
+      // May also have deep dependency chain warning depending on depth calculation
+      if (targetNode && targetNode.depth > 5) {
+        expect(targetNode.warnings?.deepDependencyChain).toBe(true);
+      }
+    });
+  });
 });

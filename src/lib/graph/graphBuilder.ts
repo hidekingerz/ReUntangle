@@ -73,6 +73,9 @@ export class GraphBuilder {
     // Calculate depths
     this.calculateDepths(nodes);
 
+    // Detect warnings
+    this.detectWarnings(nodes);
+
     return { nodes, edges };
   }
 
@@ -151,11 +154,13 @@ export class GraphBuilder {
   }
 
   /**
-   * Get node size based on complexity
+   * Get node size based on complexity and warnings
    */
-  private getNodeSize(complexity: number): number {
-    // Size range: 40px to 100px based on complexity
-    return 40 + (complexity / 100) * 60;
+  private getNodeSize(complexity: number, hasHighCoupling: boolean): number {
+    // Base size range: 40px to 100px based on complexity
+    const baseSize = 40 + (complexity / 100) * 60;
+    // Increase size by 30% for high coupling warning
+    return hasHighCoupling ? baseSize * 1.3 : baseSize;
   }
 
   /**
@@ -176,8 +181,25 @@ export class GraphBuilder {
       const isUnused = node.dependents.length === 0;
       const hasCircularDep = circularNodes.has(id);
       const isRoot = this.isRootComponent(node.component.filePath);
+      const hasDeepDependencyChain = node.warnings?.deepDependencyChain || false;
+      const hasHighCoupling = node.warnings?.highCoupling || false;
+
       const color = this.getNodeColor(node.complexity, isUnused, hasCircularDep, isRoot);
-      const size = this.getNodeSize(node.complexity);
+      const size = this.getNodeSize(node.complexity, hasHighCoupling);
+
+      // Determine border style based on warnings
+      let border = '2px solid #fff';
+      let boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+
+      if (hasCircularDep) {
+        border = '3px solid #dc2626'; // Red for circular dependency
+      } else if (hasDeepDependencyChain) {
+        border = '3px solid #eab308'; // Yellow for deep dependency chain
+        boxShadow = '0 0 0 2px #eab308, 0 4px 6px rgba(0, 0, 0, 0.1)';
+      } else if (hasHighCoupling) {
+        border = '3px solid #f97316'; // Orange for high coupling
+        boxShadow = '0 0 0 2px #f97316, 0 4px 6px rgba(0, 0, 0, 0.1)';
+      }
 
       flowNodes.push({
         id,
@@ -195,8 +217,8 @@ export class GraphBuilder {
           width: size,
           height: size,
           borderRadius: '50%',
-          border: hasCircularDep ? '3px solid #dc2626' : '2px solid #fff',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          border,
+          boxShadow,
           // Display complexity score inside the node
           display: 'flex',
           alignItems: 'center',
@@ -266,6 +288,19 @@ export class GraphBuilder {
     }
 
     return circularNodes;
+  }
+
+  /**
+   * Detect warnings for all nodes
+   */
+  private detectWarnings(nodes: Map<string, DependencyNode>): void {
+    for (const node of nodes.values()) {
+      node.warnings = {
+        deepDependencyChain: node.depth > 5,
+        highCoupling: node.dependents.length >= 10,
+        unused: node.dependents.length === 0 && !this.isRootComponent(node.component.filePath),
+      };
+    }
   }
 
   /**
