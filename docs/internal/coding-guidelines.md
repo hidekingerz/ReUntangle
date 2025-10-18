@@ -105,11 +105,21 @@ function filterComponents<T extends ComponentInfo>(
 **基本ルール**:
 - 関数コンポーネントを使用
 - Props は型定義を使用
-- デフォルトエクスポートを使用
+- **デフォルトエクスポート**を使用（コンポーネントファイルのみ）
 - 'use client' ディレクティブは必要な場合のみ
 
+**なぜデフォルトエクスポート？**
+- ✅ Next.js App Router の `page.tsx`、`layout.tsx` では**必須**
+- ✅ React コミュニティの慣習（1ファイル1コンポーネント）
+- ✅ `React.lazy()` との相性が良い
+- ✅ ファイル名 = コンポーネント名 の対応が明確
+
+**デメリット（認識した上で使用）**:
+- ⚠️ インポート時に任意の名前を付けられる（名前の一貫性が保証されない）
+- ⚠️ IDEのリファクタリング機能が効きにくい場合がある
+
 ```typescript
-// ✅ Good: 型定義付き関数コンポーネント
+// ✅ Good: 型定義付き関数コンポーネント（デフォルトエクスポート）
 'use client';
 
 import type { ComponentInfo } from '@/types';
@@ -136,17 +146,29 @@ export default function DetailPanel({ component, onClose }: DetailPanelProps) {
 const DetailPanel: React.FC<DetailPanelProps> = ({ component, onClose }) => {
   // ...
 };
+
+// ❌ Bad: コンポーネントで名前付きエクスポート
+export function DetailPanel({ component, onClose }: DetailPanelProps) {
+  // コンポーネントはデフォルトエクスポートを使用する
+}
 ```
 
 ### 2.2 Hooks
 
 **カスタムフック**:
 - `use` で始める命名
+- **名前付きエクスポート**を使用（複数フックを1ファイルに配置可能）
 - ロジックの再利用に使用
 - 複雑な状態管理を分離
 
+**なぜ名前付きエクスポート？**
+- ✅ IDEの自動補完・リファクタリングが効く
+- ✅ インポート時に正しい名前を強制できる（typo防止）
+- ✅ Tree Shaking（未使用コード削除）が効率的
+- ✅ 1ファイルに複数のヘルパー関数を含められる
+
 ```typescript
-// ✅ Good: カスタムフックの定義
+// ✅ Good: カスタムフックの定義（名前付きエクスポート）
 export function useGraphFilter({
   nodes,
   edges,
@@ -177,6 +199,11 @@ export function useAppState() {
     setLayoutType,
     reset,
   };
+}
+
+// ❌ Bad: フックでデフォルトエクスポート
+export default function useAppState() {
+  // フックは名前付きエクスポートを使用する
 }
 ```
 
@@ -216,33 +243,85 @@ const handleClick = useCallback(() => {
 }, []); // 依存関係がないなら useCallback 不要
 ```
 
-### 2.3 ファイル構成
+### 2.3 エクスポート方針まとめ
+
+**プロジェクト全体のルール**:
+
+| ファイルタイプ | エクスポート方法 | 理由 |
+|--------------|----------------|------|
+| **Reactコンポーネント** | デフォルト | Next.js要件、React慣習、`React.lazy()`対応 |
+| **カスタムフック** | 名前付き | IDE サポート、Tree Shaking、名前の一貫性 |
+| **クラス** | 名前付き | 名前の一貫性、リファクタリング対応 |
+| **ユーティリティ関数** | 名前付き | 複数エクスポート可能、Tree Shaking |
+| **型定義** | 名前付き | Tree Shaking、複数定義、再エクスポート容易 |
+
+```typescript
+// ✅ コンポーネント: デフォルトエクスポート
+// components/DetailPanel.tsx
+export default function DetailPanel() { ... }
+
+// インポート
+import DetailPanel from '@/components/DetailPanel';
+
+// ✅ フック: 名前付きエクスポート
+// hooks/useAppState.ts
+export function useAppState() { ... }
+export function useGraphFilter() { ... }
+
+// インポート
+import { useAppState, useGraphFilter } from '@/hooks/useAppState';
+
+// ✅ クラス: 名前付きエクスポート
+// lib/graph/graphBuilder.ts
+export class GraphBuilder { ... }
+
+// インポート
+import { GraphBuilder } from '@/lib/graph/graphBuilder';
+
+// ✅ ユーティリティ: 名前付きエクスポート
+// lib/fileSystem.ts
+export function scanDirectory() { ... }
+export function isFileSystemAccessSupported() { ... }
+
+// インポート
+import { scanDirectory, isFileSystemAccessSupported } from '@/lib/fileSystem';
+
+// ✅ 型: 名前付きエクスポート
+// types/index.ts
+export type ComponentInfo = { ... };
+export type LayoutType = 'tree' | 'force';
+
+// インポート
+import type { ComponentInfo, LayoutType } from '@/types';
+```
+
+### 2.4 ファイル構成
 
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── page.tsx           # ページコンポーネント
-│   ├── layout.tsx         # レイアウト
+│   ├── page.tsx           # ページコンポーネント（デフォルトエクスポート必須）
+│   ├── layout.tsx         # レイアウト（デフォルトエクスポート必須）
 │   └── globals.css        # グローバルスタイル
-├── components/            # UIコンポーネント
+├── components/            # UIコンポーネント（デフォルトエクスポート）
 │   ├── DetailPanel.tsx
 │   ├── GraphView.tsx
 │   └── GraphView/         # サブコンポーネント
-│       ├── ReactFlowWrapper.tsx
-│       ├── nodeTypes.ts
-│       └── constants.ts
-├── hooks/                 # カスタムフック
+│       ├── ReactFlowWrapper.tsx  # デフォルトエクスポート
+│       ├── nodeTypes.ts          # 名前付きエクスポート
+│       └── constants.ts          # 名前付きエクスポート
+├── hooks/                 # カスタムフック（名前付きエクスポート）
 │   ├── useAppState.ts
 │   └── useGraphFilter.ts
-├── lib/                   # ビジネスロジック
+├── lib/                   # ビジネスロジック（名前付きエクスポート）
 │   ├── parser/
-│   │   └── componentParser.ts
+│   │   └── componentParser.ts   # export class ComponentParser
 │   ├── graph/
-│   │   ├── graphBuilder.ts
-│   │   └── layoutAlgorithm.ts
-│   └── fileSystem.ts
-└── types/                 # 型定義
-    └── index.ts
+│   │   ├── graphBuilder.ts      # export class GraphBuilder
+│   │   └── layoutAlgorithm.ts   # export function applyLayout
+│   └── fileSystem.ts            # export function scanDirectory など
+└── types/                 # 型定義（名前付きエクスポート）
+    └── index.ts                  # export type ComponentInfo など
 ```
 
 ---
