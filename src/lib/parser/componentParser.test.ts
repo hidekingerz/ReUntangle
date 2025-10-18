@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentParser } from './componentParser';
 import type { FileInfo } from '@/types';
 
@@ -608,9 +608,15 @@ describe('ComponentParser', () => {
         extension: '.tsx',
       };
 
+      // エラーログと警告を抑制
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
       const components = parser.parseFile(fileInfo);
 
       expect(components).toEqual([]);
+
+      // スパイをリストア
+      consoleWarnSpy.mockRestore();
     });
 
     it('コンポーネントではない関数（小文字）を無視すること', () => {
