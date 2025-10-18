@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { Node, Edge } from '@xyflow/react';
-import type { FlowNodeData, LayoutType, ComponentInfo } from '@/types';
+import type { FlowNodeData, LayoutType, ComponentInfo, ProjectMetrics } from '@/types';
 
 type GraphData = {
   nodes: Node<FlowNodeData>[];
@@ -17,13 +17,15 @@ export function useAppState() {
   const [layoutType, setLayoutType] = useState<LayoutType>('tree');
   const [projectName, setProjectName] = useState<string>('');
   const [stats, setStats] = useState<Stats | null>(null);
+  const [metrics, setMetrics] = useState<ProjectMetrics | null>(null);
   const [selectedComponent, setSelectedComponent] = useState<ComponentInfo | null>(null);
 
   const updateAnalysisResult = useCallback(
-    (name: string, data: GraphData, analysisStats: Stats) => {
+    (name: string, data: GraphData, analysisStats: Stats, projectMetrics: ProjectMetrics) => {
       setProjectName(name);
       setGraphData(data);
       setStats(analysisStats);
+      setMetrics(projectMetrics);
     },
     []
   );
@@ -31,6 +33,7 @@ export function useAppState() {
   const reset = useCallback(() => {
     setGraphData(null);
     setStats(null);
+    setMetrics(null);
     setProjectName('');
     setSelectedComponent(null);
   }, []);
@@ -55,6 +58,7 @@ export function useAppState() {
     layoutType,
     projectName,
     stats,
+    metrics,
     selectedComponent,
     // Actions
     setLayoutType,

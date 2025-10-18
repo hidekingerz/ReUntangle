@@ -1,10 +1,11 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import FolderSelector from '@/components/FolderSelector';
 import GraphView from '@/components/GraphView';
 import DetailPanel from '@/components/DetailPanel';
 import Header from '@/components/Header';
+import MetricsDashboard from '@/components/MetricsDashboard';
 import { useProjectAnalysis } from '@/hooks/useProjectAnalysis';
 import { useAppState } from '@/hooks/useAppState';
 
@@ -15,6 +16,7 @@ export default function Home() {
     layoutType,
     projectName,
     stats,
+    metrics,
     selectedComponent,
     setLayoutType,
     updateAnalysisResult,
@@ -22,6 +24,7 @@ export default function Home() {
     selectComponent,
     clearSelection,
   } = useAppState();
+  const [showMetrics, setShowMetrics] = useState(false);
 
   const handleFolderSelected = useCallback(
     async (directoryHandle: FileSystemDirectoryHandle) => {
@@ -30,7 +33,8 @@ export default function Home() {
         updateAnalysisResult(
           directoryHandle.name,
           { nodes: result.nodes, edges: result.edges },
-          { filesScanned: result.filesScanned, componentsFound: result.componentsFound }
+          { filesScanned: result.filesScanned, componentsFound: result.componentsFound },
+          result.metrics
         );
       } catch (error) {
         alert(`Analysis failed: ${(error as Error).message}`);
@@ -46,6 +50,7 @@ export default function Home() {
         layoutType={layoutType}
         onLayoutChange={setLayoutType}
         onReset={reset}
+        onShowMetrics={() => setShowMetrics(true)}
         stats={
           stats ? { projectName, ...stats } : null
         }
@@ -68,6 +73,11 @@ export default function Home() {
           </>
         )}
       </div>
+
+      {/* Metrics Dashboard Modal */}
+      {showMetrics && metrics && (
+        <MetricsDashboard metrics={metrics} onClose={() => setShowMetrics(false)} />
+      )}
     </main>
   );
 }

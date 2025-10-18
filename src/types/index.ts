@@ -145,6 +145,34 @@ export type FlowNodeData = {
 } & Record<string, unknown>;
 
 /**
+ * Project metrics for dashboard
+ */
+export type ProjectMetrics = {
+  totalComponents: number;
+  totalHooks: number;
+  averageComplexity: number;
+  maxComplexity: number;
+  minComplexity: number;
+  circularDependencies: number;
+  topComplexComponents: Array<{
+    name: string;
+    filePath: string;
+    complexity: number;
+  }>;
+  mostDependedOn: Array<{
+    name: string;
+    filePath: string;
+    dependentCount: number;
+  }>;
+  complexityDistribution: {
+    simple: number; // 0-30
+    standard: number; // 31-60
+    complex: number; // 61-80
+    veryComplex: number; // 81-100
+  };
+};
+
+/**
  * File System Access API types
  */
 declare global {
