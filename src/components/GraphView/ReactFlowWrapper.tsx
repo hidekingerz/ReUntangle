@@ -12,6 +12,7 @@ type ReactFlowWrapperProps = {
   onNodesChange: OnNodesChange<Node<FlowNodeData>>;
   onEdgesChange: OnEdgesChange;
   onNodeClick: (event: React.MouseEvent, node: Node<FlowNodeData>) => void;
+  onNodeDoubleClick?: (event: React.MouseEvent, node: Node<FlowNodeData>) => void;
 };
 
 export function ReactFlowWrapper({
@@ -20,6 +21,7 @@ export function ReactFlowWrapper({
   onNodesChange,
   onEdgesChange,
   onNodeClick,
+  onNodeDoubleClick,
 }: ReactFlowWrapperProps) {
   return (
     <ReactFlow
@@ -29,6 +31,7 @@ export function ReactFlowWrapper({
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onNodeClick={onNodeClick}
+      onNodeDoubleClick={onNodeDoubleClick}
       fitView
       {...REACT_FLOW_CONFIG}
     >
