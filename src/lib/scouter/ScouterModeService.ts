@@ -114,7 +114,10 @@ export class ScouterModeService {
       const edges = allEdges.filter((e) => e.source === nodeId);
       edges.forEach((edge) => {
         relatedEdgeIds.add(edge.id);
-        if (!dependencyNodeIds.has(edge.target) && edge.target !== centerNodeId) {
+        if (
+          !dependencyNodeIds.has(edge.target) &&
+          edge.target !== centerNodeId
+        ) {
           dependencyNodeIds.add(edge.target);
           visitDependencies(edge.target);
         }
@@ -126,7 +129,10 @@ export class ScouterModeService {
       const edges = allEdges.filter((e) => e.target === nodeId);
       edges.forEach((edge) => {
         relatedEdgeIds.add(edge.id);
-        if (!dependentNodeIds.has(edge.source) && edge.source !== centerNodeId) {
+        if (
+          !dependentNodeIds.has(edge.source) &&
+          edge.source !== centerNodeId
+        ) {
           dependentNodeIds.add(edge.source);
           visitDependents(edge.source);
         }
@@ -154,9 +160,9 @@ export class ScouterModeService {
    * @param node - 強調表示するノード
    * @returns 視覚的スタイルが強化されたノード
    */
-  static highlightCenterNode<T extends Record<string, unknown> = Record<string, unknown>>(
-    node: Node<T>
-  ): Node<T> {
+  static highlightCenterNode<
+    T extends Record<string, unknown> = Record<string, unknown>,
+  >(node: Node<T>): Node<T> {
     const currentWidth =
       typeof node.style?.width === 'number' ? node.style.width : 60;
     const currentHeight =

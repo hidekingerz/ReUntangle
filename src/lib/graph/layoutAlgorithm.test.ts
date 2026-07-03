@@ -45,8 +45,15 @@ describe('レイアウトアルゴリズム', () => {
     });
 
     it('同じレベルのノードを水平に配置できること', () => {
-      const nodes: Node[] = [createNode('root'), createNode('child1'), createNode('child2')];
-      const edges: Edge[] = [createEdge('root', 'child1'), createEdge('root', 'child2')];
+      const nodes: Node[] = [
+        createNode('root'),
+        createNode('child1'),
+        createNode('child2'),
+      ];
+      const edges: Edge[] = [
+        createEdge('root', 'child1'),
+        createEdge('root', 'child2'),
+      ];
 
       const layouted = applyLayout(nodes, edges, 'tree');
 
@@ -68,7 +75,10 @@ describe('レイアウトアルゴリズム', () => {
         createNode('child1'),
         createNode('child2'),
       ];
-      const edges: Edge[] = [createEdge('root1', 'child1'), createEdge('root2', 'child2')];
+      const edges: Edge[] = [
+        createEdge('root1', 'child1'),
+        createEdge('root2', 'child2'),
+      ];
 
       const layouted = applyLayout(nodes, edges, 'tree');
 
@@ -110,7 +120,11 @@ describe('レイアウトアルゴリズム', () => {
     });
 
     it('孤立したノードを処理できること', () => {
-      const nodes: Node[] = [createNode('1'), createNode('2'), createNode('isolated')];
+      const nodes: Node[] = [
+        createNode('1'),
+        createNode('2'),
+        createNode('isolated'),
+      ];
       const edges: Edge[] = [createEdge('1', '2')];
 
       const layouted = applyLayout(nodes, edges, 'tree');
@@ -123,7 +137,12 @@ describe('レイアウトアルゴリズム', () => {
 
   describe('フォースレイアウト', () => {
     it('ノードを円形に配置できること', () => {
-      const nodes: Node[] = [createNode('1'), createNode('2'), createNode('3'), createNode('4')];
+      const nodes: Node[] = [
+        createNode('1'),
+        createNode('2'),
+        createNode('3'),
+        createNode('4'),
+      ];
       const edges: Edge[] = [];
 
       const layouted = applyLayout(nodes, edges, 'force');
@@ -144,7 +163,9 @@ describe('レイアウトアルゴリズム', () => {
 
     it('ノード数に基づいて円のサイズをスケールできること', () => {
       const smallGraph: Node[] = [createNode('1'), createNode('2')];
-      const largeGraph: Node[] = Array.from({ length: 20 }, (_, i) => createNode(`${i}`));
+      const largeGraph: Node[] = Array.from({ length: 20 }, (_, i) =>
+        createNode(`${i}`)
+      );
 
       const smallLayout = applyLayout(smallGraph, [], 'force');
       const largeLayout = applyLayout(largeGraph, [], 'force');
@@ -152,7 +173,9 @@ describe('レイアウトアルゴリズム', () => {
       // Calculate average distance from center for both
       const calcAvgDistance = (nodes: Node[]) => {
         const distances = nodes.map((n) =>
-          Math.sqrt(Math.pow(n.position.x - 400, 2) + Math.pow(n.position.y - 400, 2))
+          Math.sqrt(
+            Math.pow(n.position.x - 400, 2) + Math.pow(n.position.y - 400, 2)
+          )
         );
         return distances.reduce((sum, d) => sum + d, 0) / distances.length;
       };
@@ -165,7 +188,9 @@ describe('レイアウトアルゴリズム', () => {
     });
 
     it('ノードを円周上に均等に配置できること', () => {
-      const nodes: Node[] = Array.from({ length: 8 }, (_, i) => createNode(`${i}`));
+      const nodes: Node[] = Array.from({ length: 8 }, (_, i) =>
+        createNode(`${i}`)
+      );
 
       const layouted = applyLayout(nodes, [], 'force');
 

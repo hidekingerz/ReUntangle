@@ -216,8 +216,12 @@ describe('ComponentParser', () => {
       const components = parser.parseFile(fileInfo);
       const imports = components[0].imports;
 
-      expect(imports.find((i) => i.source === './Button')?.isReactComponent).toBe(true);
-      expect(imports.find((i) => i.source === '../Card')?.isReactComponent).toBe(true);
+      expect(
+        imports.find((i) => i.source === './Button')?.isReactComponent
+      ).toBe(true);
+      expect(
+        imports.find((i) => i.source === '../Card')?.isReactComponent
+      ).toBe(true);
     });
 
     it('PascalCaseのインポートをReactコンポーネントとして識別できること', () => {
@@ -237,8 +241,12 @@ describe('ComponentParser', () => {
       const components = parser.parseFile(fileInfo);
       const imports = components[0].imports;
 
-      expect(imports.find((i) => i.source === '@mui/material')?.isReactComponent).toBe(true);
-      expect(imports.find((i) => i.source === '@utils')?.isReactComponent).toBe(false);
+      expect(
+        imports.find((i) => i.source === '@mui/material')?.isReactComponent
+      ).toBe(true);
+      expect(imports.find((i) => i.source === '@utils')?.isReactComponent).toBe(
+        false
+      );
     });
   });
 
@@ -311,9 +319,15 @@ describe('ComponentParser', () => {
       // Note: The parser includes React imports as dependencies because they are imported
       // This is expected behavior - the parser extracts all imports from react package
       // The hooks themselves (useState, useEffect) are detected separately in the hooks array
-      expect(components[0].imports.find((i) => i.source === 'react')).toBeDefined();
-      expect(components[0].hooks.find((h) => h.name === 'useState')).toBeDefined();
-      expect(components[0].hooks.find((h) => h.name === 'useEffect')).toBeDefined();
+      expect(
+        components[0].imports.find((i) => i.source === 'react')
+      ).toBeDefined();
+      expect(
+        components[0].hooks.find((h) => h.name === 'useState')
+      ).toBeDefined();
+      expect(
+        components[0].hooks.find((h) => h.name === 'useEffect')
+      ).toBeDefined();
     });
   });
 
@@ -406,12 +420,16 @@ describe('ComponentParser', () => {
 
       expect(propsInfo).toBeDefined();
       expect(propsInfo?.properties).toHaveLength(3);
-      expect(propsInfo?.properties.find((p) => p.name === 'label')).toMatchObject({
+      expect(
+        propsInfo?.properties.find((p) => p.name === 'label')
+      ).toMatchObject({
         name: 'label',
         type: 'string',
         required: true,
       });
-      expect(propsInfo?.properties.find((p) => p.name === 'disabled')).toMatchObject({
+      expect(
+        propsInfo?.properties.find((p) => p.name === 'disabled')
+      ).toMatchObject({
         name: 'disabled',
         required: false,
       });
@@ -563,7 +581,9 @@ describe('ComponentParser', () => {
       const simpleComponents = parser.parseFile(simpleFile);
       const complexComponents = parser.parseFile(complexFile);
 
-      expect(complexComponents[0].complexity).toBeGreaterThan(simpleComponents[0].complexity);
+      expect(complexComponents[0].complexity).toBeGreaterThan(
+        simpleComponents[0].complexity
+      );
     });
   });
 
@@ -593,7 +613,11 @@ describe('ComponentParser', () => {
       const components = parser.parseFile(fileInfo);
 
       expect(components).toHaveLength(3);
-      expect(components.map((c) => c.name).sort()).toEqual(['Button', 'Card', 'Modal']);
+      expect(components.map((c) => c.name).sort()).toEqual([
+        'Button',
+        'Card',
+        'Modal',
+      ]);
     });
   });
 
@@ -609,7 +633,9 @@ describe('ComponentParser', () => {
       };
 
       // エラーログと警告を抑制
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const consoleWarnSpy = vi
+        .spyOn(console, 'warn')
+        .mockImplementation(() => {});
 
       const components = parser.parseFile(fileInfo);
 

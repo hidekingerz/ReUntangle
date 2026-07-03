@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import MetricsDashboard from './MetricsDashboard';
 import type { ProjectMetrics } from '@/types';
 
@@ -12,14 +12,34 @@ describe('MetricsDashboard', () => {
     minComplexity: 10,
     circularDependencies: 2,
     topComplexComponents: [
-      { name: 'ComplexComponent', filePath: 'src/components/ComplexComponent.tsx', complexity: 85 },
-      { name: 'HeavyComponent', filePath: 'src/components/HeavyComponent.tsx', complexity: 75 },
-      { name: 'LargeComponent', filePath: 'src/components/LargeComponent.tsx', complexity: 68 },
+      {
+        name: 'ComplexComponent',
+        filePath: 'src/components/ComplexComponent.tsx',
+        complexity: 85,
+      },
+      {
+        name: 'HeavyComponent',
+        filePath: 'src/components/HeavyComponent.tsx',
+        complexity: 75,
+      },
+      {
+        name: 'LargeComponent',
+        filePath: 'src/components/LargeComponent.tsx',
+        complexity: 68,
+      },
     ],
     mostDependedOn: [
-      { name: 'Button', filePath: 'src/components/Button.tsx', dependentCount: 25 },
+      {
+        name: 'Button',
+        filePath: 'src/components/Button.tsx',
+        dependentCount: 25,
+      },
       { name: 'Icon', filePath: 'src/components/Icon.tsx', dependentCount: 20 },
-      { name: 'Input', filePath: 'src/components/Input.tsx', dependentCount: 15 },
+      {
+        name: 'Input',
+        filePath: 'src/components/Input.tsx',
+        dependentCount: 15,
+      },
     ],
     complexityDistribution: {
       simple: 20,
@@ -45,7 +65,9 @@ describe('MetricsDashboard', () => {
       // セクションの確認
       expect(screen.getByText('Overview')).toBeInTheDocument();
       expect(screen.getByText('Complexity Distribution')).toBeInTheDocument();
-      expect(screen.getByText('Most Complex Components (Top 10)')).toBeInTheDocument();
+      expect(
+        screen.getByText('Most Complex Components (Top 10)')
+      ).toBeInTheDocument();
       expect(screen.getByText('Most Depended On (Top 10)')).toBeInTheDocument();
     });
 
@@ -88,10 +110,14 @@ describe('MetricsDashboard', () => {
     });
 
     it('複雑度分布のプログレスバーが正しい幅を持つ', () => {
-      const { container } = render(<MetricsDashboard metrics={mockMetrics} onClose={mockOnClose} />);
+      const { container } = render(
+        <MetricsDashboard metrics={mockMetrics} onClose={mockOnClose} />
+      );
 
       // 複雑度分布のプログレスバーを確認
-      const progressBars = container.querySelectorAll('.bg-green-500, .bg-blue-500, .bg-yellow-500, .bg-orange-500');
+      const progressBars = container.querySelectorAll(
+        '.bg-green-500, .bg-blue-500, .bg-yellow-500, .bg-orange-500'
+      );
 
       // 期待される幅の計算（各カテゴリ / 総コンポーネント数 * 100）
       // simple: 20/50 = 40%, standard: 15/50 = 30%, complex: 10/50 = 20%, veryComplex: 5/50 = 10%
@@ -115,9 +141,15 @@ describe('MetricsDashboard', () => {
       expect(screen.getByText('LargeComponent')).toBeInTheDocument();
 
       // ファイルパス
-      expect(screen.getByText('src/components/ComplexComponent.tsx')).toBeInTheDocument();
-      expect(screen.getByText('src/components/HeavyComponent.tsx')).toBeInTheDocument();
-      expect(screen.getByText('src/components/LargeComponent.tsx')).toBeInTheDocument();
+      expect(
+        screen.getByText('src/components/ComplexComponent.tsx')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('src/components/HeavyComponent.tsx')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('src/components/LargeComponent.tsx')
+      ).toBeInTheDocument();
 
       // 複雑度バッジ
       expect(screen.getByText('85')).toBeInTheDocument();
@@ -223,10 +255,26 @@ describe('MetricsDashboard', () => {
         ...mockMetrics,
         averageComplexity: 50, // 重複を避けるために変更
         topComplexComponents: [
-          { name: 'SimpleComp', filePath: 'src/SimpleComp.tsx', complexity: 28 }, // green
-          { name: 'StandardComp', filePath: 'src/StandardComp.tsx', complexity: 52 }, // blue
-          { name: 'ComplexComp', filePath: 'src/ComplexComp.tsx', complexity: 73 }, // yellow
-          { name: 'VeryComplexComp', filePath: 'src/VeryComplexComp.tsx', complexity: 88 }, // orange
+          {
+            name: 'SimpleComp',
+            filePath: 'src/SimpleComp.tsx',
+            complexity: 28,
+          }, // green
+          {
+            name: 'StandardComp',
+            filePath: 'src/StandardComp.tsx',
+            complexity: 52,
+          }, // blue
+          {
+            name: 'ComplexComp',
+            filePath: 'src/ComplexComp.tsx',
+            complexity: 73,
+          }, // yellow
+          {
+            name: 'VeryComplexComp',
+            filePath: 'src/VeryComplexComp.tsx',
+            complexity: 88,
+          }, // orange
         ],
         complexityDistribution: {
           simple: 18, // 重複を避けるために変更
@@ -262,7 +310,9 @@ describe('MetricsDashboard', () => {
     });
 
     it('テーブルに適切なセマンティックHTMLが使用されている', () => {
-      const { container } = render(<MetricsDashboard metrics={mockMetrics} onClose={mockOnClose} />);
+      const { container } = render(
+        <MetricsDashboard metrics={mockMetrics} onClose={mockOnClose} />
+      );
 
       const tables = container.querySelectorAll('table');
       expect(tables.length).toBe(2);

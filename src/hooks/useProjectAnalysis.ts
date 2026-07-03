@@ -17,7 +17,9 @@ export function useProjectAnalysis() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const analyzeProject = useCallback(
-    async (directoryHandle: FileSystemDirectoryHandle): Promise<AnalysisResult> => {
+    async (
+      directoryHandle: FileSystemDirectoryHandle
+    ): Promise<AnalysisResult> => {
       setIsAnalyzing(true);
 
       try {

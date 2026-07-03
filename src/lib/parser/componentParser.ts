@@ -2,7 +2,14 @@ import { parse } from '@babel/parser';
 import traverse from '@babel/traverse';
 import type { File } from '@babel/types';
 import * as t from '@babel/types';
-import type { ComponentInfo, ImportInfo, FileInfo, HookUsage, PropsInfo, PropProperty } from '@/types';
+import type {
+  ComponentInfo,
+  ImportInfo,
+  FileInfo,
+  HookUsage,
+  PropsInfo,
+  PropProperty,
+} from '@/types';
 
 /**
  * Parse a file and extract component information
@@ -22,13 +29,19 @@ export class ComponentParser {
       for (const data of componentData) {
         const hooks = this.extractHooks(data.body);
         const customHookCalls = this.extractCustomHookCalls(data.body);
-        const propsInfo = this.extractPropsInfo(ast, data.name, fileInfo.extension);
+        const propsInfo = this.extractPropsInfo(
+          ast,
+          data.name,
+          fileInfo.extension
+        );
         const linesOfCode = this.calculateLinesOfCode(data.body);
         const externalLibraryCount = this.countExternalLibraries(imports);
 
         // Combine import-based dependencies and custom hook calls
         const importDeps = this.extractDependencies(data.name, imports);
-        const allDependencies = [...new Set([...importDeps, ...customHookCalls])];
+        const allDependencies = [
+          ...new Set([...importDeps, ...customHookCalls]),
+        ];
 
         components.push({
           id: `${fileInfo.path}:${data.name}`,
@@ -151,7 +164,8 @@ export class ComponentParser {
 
       // Variable declarations with arrow functions or function expressions
       VariableDeclarator(path) {
-        const name = path.node.id.type === 'Identifier' ? path.node.id.name : null;
+        const name =
+          path.node.id.type === 'Identifier' ? path.node.id.name : null;
 
         if (!name || !isPotentialComponent(name)) {
           return;
@@ -215,7 +229,10 @@ export class ComponentParser {
   /**
    * Extract component dependencies from imports
    */
-  private extractDependencies(componentName: string, imports: ImportInfo[]): string[] {
+  private extractDependencies(
+    componentName: string,
+    imports: ImportInfo[]
+  ): string[] {
     const dependencies: string[] = [];
 
     for (const imp of imports) {
@@ -334,7 +351,11 @@ export class ComponentParser {
   /**
    * Extract Props information from TypeScript interfaces/types
    */
-  private extractPropsInfo(ast: File, componentName: string, extension: string): PropsInfo | undefined {
+  private extractPropsInfo(
+    ast: File,
+    componentName: string,
+    extension: string
+  ): PropsInfo | undefined {
     if (extension !== '.tsx' && extension !== '.ts') {
       return undefined;
     }
@@ -367,7 +388,10 @@ export class ComponentParser {
         }
       },
       TSTypeAliasDeclaration(path) {
-        if (path.node.id.name === propsTypeName && t.isTSTypeLiteral(path.node.typeAnnotation)) {
+        if (
+          path.node.id.name === propsTypeName &&
+          t.isTSTypeLiteral(path.node.typeAnnotation)
+        ) {
           const properties: PropProperty[] = [];
 
           for (const prop of path.node.typeAnnotation.members) {
@@ -394,7 +418,9 @@ export class ComponentParser {
   /**
    * Get type annotation as string
    */
-  private getTypeAnnotation(typeAnnotation: t.TSTypeAnnotation | undefined | null): string {
+  private getTypeAnnotation(
+    typeAnnotation: t.TSTypeAnnotation | undefined | null
+  ): string {
     if (!typeAnnotation || !typeAnnotation.typeAnnotation) {
       return 'unknown';
     }

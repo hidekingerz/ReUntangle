@@ -149,7 +149,9 @@ describe('useScouterMode', () => {
     });
 
     const filteredNodeIds = result.current.filteredNodes.map((n) => n.id);
-    expect(filteredNodeIds).toEqual(expect.arrayContaining(['A', 'B', 'C', 'D']));
+    expect(filteredNodeIds).toEqual(
+      expect.arrayContaining(['A', 'B', 'C', 'D'])
+    );
     expect(result.current.filteredNodes).toHaveLength(4); // All nodes included
   });
 
@@ -176,12 +178,16 @@ describe('useScouterMode', () => {
       result.current.activateScouterMode('A');
     });
 
-    const nonCenterNode = result.current.filteredNodes.find((n) => n.id === 'B');
+    const nonCenterNode = result.current.filteredNodes.find(
+      (n) => n.id === 'B'
+    );
     expect(nonCenterNode?.data.isScouterCenter).toBeUndefined();
   });
 
   it('should handle error when activating with invalid node ID', () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
     const { result } = renderHook(() =>
       useScouterMode({ nodes: mockNodes, edges: mockEdges })
     );

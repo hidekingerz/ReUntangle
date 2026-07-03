@@ -47,7 +47,9 @@ function CustomNode({ data }: CustomNodeProps) {
           textOverflow: 'ellipsis',
         }}
       >
-        {data.componentInfo.type === 'hook' && <span style={{ marginRight: '4px' }}>⚡</span>}
+        {data.componentInfo.type === 'hook' && (
+          <span style={{ marginRight: '4px' }}>⚡</span>
+        )}
         {data.componentInfo.name}
       </div>
     </div>

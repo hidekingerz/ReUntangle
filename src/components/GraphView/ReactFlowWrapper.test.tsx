@@ -1,12 +1,20 @@
 import { render } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { ReactFlowWrapper } from './ReactFlowWrapper';
 import type { Node, Edge } from '@xyflow/react';
 import type { FlowNodeData } from '@/types';
 
 // Mock ReactFlow components
 vi.mock('@xyflow/react', () => ({
-  ReactFlow: ({ children, nodes, edges }: { children?: React.ReactNode; nodes: Node<FlowNodeData>[]; edges: Edge[] }) => (
+  ReactFlow: ({
+    children,
+    nodes,
+    edges,
+  }: {
+    children?: React.ReactNode;
+    nodes: Node<FlowNodeData>[];
+    edges: Edge[];
+  }) => (
     <div data-testid="react-flow">
       <div data-testid="nodes-count">{nodes.length}</div>
       <div data-testid="edges-count">{edges.length}</div>
@@ -16,7 +24,9 @@ vi.mock('@xyflow/react', () => ({
   Background: () => <div data-testid="background">Background</div>,
   Controls: () => <div data-testid="controls">Controls</div>,
   MiniMap: () => <div data-testid="minimap">MiniMap</div>,
-  ReactFlowProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  ReactFlowProvider: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 
 describe('ReactFlowWrapper', () => {

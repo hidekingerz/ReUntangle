@@ -46,22 +46,23 @@ npm install
 ```json
 {
   "dependencies": {
-    "next": "15.5.3",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "@xyflow/react": "12.8.4",
-    "@babel/parser": "^7.25.0",
-    "@babel/traverse": "^7.25.0",
-    "@babel/types": "^7.25.0"
+    "next": "16.2.10",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "@xyflow/react": "12.11.1",
+    "@babel/parser": "^8.0.0",
+    "@babel/traverse": "^8.0.0",
+    "@babel/types": "^8.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.0",
-    "tailwindcss": "^3.4.0",
-    "@types/react": "^19.0.0",
-    "@types/node": "^20.16.0",
-    "eslint": "9.35.0",
-    "prettier": "^3.6.0",
-    "vitest": "3.2.4"
+    "typescript": "^6.0.3",
+    "tailwindcss": "^4.3.2",
+    "@tailwindcss/postcss": "^4.3.2",
+    "@types/react": "^19.2.17",
+    "@types/node": "^26.1.0",
+    "eslint": "10.6.0",
+    "prettier": "^3.9.4",
+    "vitest": "4.1.9"
   }
 }
 ```

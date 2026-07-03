@@ -43,7 +43,9 @@ export default function GraphView({
 
   // ノードにハイライトを適用
   const highlightedNodes = useMemo((): Node<FlowNodeData>[] => {
-    const nodesToHighlight = isScouterMode ? scouterFilteredNodes : initialNodes;
+    const nodesToHighlight = isScouterMode
+      ? scouterFilteredNodes
+      : initialNodes;
 
     if (!highlightedNodeIds || highlightedNodeIds.size === 0) {
       return nodesToHighlight;

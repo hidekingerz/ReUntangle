@@ -125,7 +125,11 @@ export class GraphBuilder {
   private isRootComponent(filePath: string): boolean {
     const fileName = filePath.split('/').pop() || '';
     // Next.js App Router entry points
-    return fileName === 'page.tsx' || fileName === 'layout.tsx' || fileName === 'route.ts';
+    return (
+      fileName === 'page.tsx' ||
+      fileName === 'layout.tsx' ||
+      fileName === 'route.ts'
+    );
   }
 
   /**
@@ -181,10 +185,16 @@ export class GraphBuilder {
       const isUnused = node.dependents.length === 0;
       const hasCircularDep = circularNodes.has(id);
       const isRoot = this.isRootComponent(node.component.filePath);
-      const hasDeepDependencyChain = node.warnings?.deepDependencyChain || false;
+      const hasDeepDependencyChain =
+        node.warnings?.deepDependencyChain || false;
       const hasHighCoupling = node.warnings?.highCoupling || false;
 
-      const color = this.getNodeColor(node.complexity, isUnused, hasCircularDep, isRoot);
+      const color = this.getNodeColor(
+        node.complexity,
+        isUnused,
+        hasCircularDep,
+        isRoot
+      );
       const size = this.getNodeSize(node.complexity, hasHighCoupling);
 
       // Determine border style based on warnings
@@ -298,7 +308,9 @@ export class GraphBuilder {
       node.warnings = {
         deepDependencyChain: node.depth > 5,
         highCoupling: node.dependents.length >= 10,
-        unused: node.dependents.length === 0 && !this.isRootComponent(node.component.filePath),
+        unused:
+          node.dependents.length === 0 &&
+          !this.isRootComponent(node.component.filePath),
       };
     }
   }
@@ -312,7 +324,9 @@ export class GraphBuilder {
 
     // Total counts
     const totalComponents = components.length;
-    const totalHooks = components.filter((node) => node.component.type === 'hook').length;
+    const totalHooks = components.filter(
+      (node) => node.component.type === 'hook'
+    ).length;
 
     // Complexity metrics
     const complexities = components.map((node) => node.complexity);
@@ -344,10 +358,12 @@ export class GraphBuilder {
     // Complexity distribution
     const complexityDistribution = {
       simple: components.filter((node) => node.complexity <= 30).length,
-      standard: components.filter((node) => node.complexity > 30 && node.complexity <= 60)
-        .length,
-      complex: components.filter((node) => node.complexity > 60 && node.complexity <= 80)
-        .length,
+      standard: components.filter(
+        (node) => node.complexity > 30 && node.complexity <= 60
+      ).length,
+      complex: components.filter(
+        (node) => node.complexity > 60 && node.complexity <= 80
+      ).length,
       veryComplex: components.filter((node) => node.complexity > 80).length,
     };
 

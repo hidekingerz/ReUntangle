@@ -33,7 +33,12 @@ export default function Home() {
   const [showMetrics, setShowMetrics] = useState(false);
 
   // Apply search and filter
-  const { filteredNodes, filteredEdges, matchedNodeIds, stats: filterStats } = useGraphFilter({
+  const {
+    filteredNodes,
+    filteredEdges,
+    matchedNodeIds,
+    stats: filterStats,
+  } = useGraphFilter({
     nodes: graphData?.nodes || [],
     edges: graphData?.edges || [],
     searchOptions,
@@ -47,7 +52,10 @@ export default function Home() {
         updateAnalysisResult(
           directoryHandle.name,
           { nodes: result.nodes, edges: result.edges },
-          { filesScanned: result.filesScanned, componentsFound: result.componentsFound },
+          {
+            filesScanned: result.filesScanned,
+            componentsFound: result.componentsFound,
+          },
           result.metrics
         );
       } catch (error) {
@@ -65,14 +73,15 @@ export default function Home() {
         onLayoutChange={setLayoutType}
         onReset={reset}
         onShowMetrics={() => setShowMetrics(true)}
-        stats={
-          stats ? { projectName, ...stats } : null
-        }
+        stats={stats ? { projectName, ...stats } : null}
       />
 
       <div className="flex-1 overflow-hidden flex flex-col">
         {!graphData ? (
-          <FolderSelector onFolderSelected={handleFolderSelected} isLoading={isAnalyzing} />
+          <FolderSelector
+            onFolderSelected={handleFolderSelected}
+            isLoading={isAnalyzing}
+          />
         ) : (
           <>
             {/* Search and Filter Bar */}
@@ -97,7 +106,10 @@ export default function Home() {
                   onNodeClick={selectComponent}
                 />
               </div>
-              <DetailPanel component={selectedComponent} onClose={clearSelection} />
+              <DetailPanel
+                component={selectedComponent}
+                onClose={clearSelection}
+              />
             </div>
           </>
         )}
@@ -105,7 +117,10 @@ export default function Home() {
 
       {/* Metrics Dashboard Modal */}
       {showMetrics && metrics && (
-        <MetricsDashboard metrics={metrics} onClose={() => setShowMetrics(false)} />
+        <MetricsDashboard
+          metrics={metrics}
+          onClose={() => setShowMetrics(false)}
+        />
       )}
     </main>
   );

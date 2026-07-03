@@ -25,7 +25,8 @@ export function useAppState() {
   const [projectName, setProjectName] = useState<string>('');
   const [stats, setStats] = useState<Stats | null>(null);
   const [metrics, setMetrics] = useState<ProjectMetrics | null>(null);
-  const [selectedComponent, setSelectedComponent] = useState<ComponentInfo | null>(null);
+  const [selectedComponent, setSelectedComponent] =
+    useState<ComponentInfo | null>(null);
   const [searchOptions, setSearchOptions] = useState<SearchOptions>({
     query: '',
     searchIn: 'both',
@@ -41,7 +42,12 @@ export function useAppState() {
   });
 
   const updateAnalysisResult = useCallback(
-    (name: string, data: GraphData, analysisStats: Stats, projectMetrics: ProjectMetrics) => {
+    (
+      name: string,
+      data: GraphData,
+      analysisStats: Stats,
+      projectMetrics: ProjectMetrics
+    ) => {
       setProjectName(name);
       setGraphData(data);
       setStats(analysisStats);

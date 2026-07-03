@@ -1,5 +1,10 @@
 import { useEffect } from 'react';
-import { useNodesState, useEdgesState, type Node, type Edge } from '@xyflow/react';
+import {
+  useNodesState,
+  useEdgesState,
+  type Node,
+  type Edge,
+} from '@xyflow/react';
 import { applyLayout } from '@/lib/graph/layoutAlgorithm';
 import type { FlowNodeData, LayoutType } from '@/types';
 

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import DetailPanel from './DetailPanel';
 import type { ComponentInfo } from '@/types';
 
@@ -13,7 +13,11 @@ describe('DetailPanel', () => {
     type: 'function',
     dependencies: ['Button', 'Icon'],
     imports: [
-      { source: 'react', specifiers: ['useState', 'useEffect'], isReactComponent: false },
+      {
+        source: 'react',
+        specifiers: ['useState', 'useEffect'],
+        isReactComponent: false,
+      },
       { source: './Button', specifiers: ['Button'], isReactComponent: true },
       { source: 'lodash', specifiers: ['debounce'], isReactComponent: false },
     ],
@@ -29,7 +33,12 @@ describe('DetailPanel', () => {
       properties: [
         { name: 'title', type: 'string', required: true },
         { name: 'onClick', type: '() => void', required: true },
-        { name: 'disabled', type: 'boolean', required: false, defaultValue: 'false' },
+        {
+          name: 'disabled',
+          type: 'boolean',
+          required: false,
+          defaultValue: 'false',
+        },
       ],
     },
   };
@@ -40,7 +49,9 @@ describe('DetailPanel', () => {
 
   describe('基本レンダリング', () => {
     it('コンポーネントがnullの場合、何も表示されない', () => {
-      const { container } = render(<DetailPanel component={null} onClose={mockOnClose} />);
+      const { container } = render(
+        <DetailPanel component={null} onClose={mockOnClose} />
+      );
       expect(container.firstChild).toBeNull();
     });
 
@@ -72,7 +83,9 @@ describe('DetailPanel', () => {
 
     it('ファイルパスが表示される', () => {
       render(<DetailPanel component={mockComponent} onClose={mockOnClose} />);
-      expect(screen.getByText('src/components/TestComponent.tsx')).toBeInTheDocument();
+      expect(
+        screen.getByText('src/components/TestComponent.tsx')
+      ).toBeInTheDocument();
     });
 
     it('コンポーネントタイプが表示される', () => {
@@ -113,7 +126,9 @@ describe('DetailPanel', () => {
         complexity: 70,
       };
 
-      render(<DetailPanel component={complexComponent} onClose={mockOnClose} />);
+      render(
+        <DetailPanel component={complexComponent} onClose={mockOnClose} />
+      );
       expect(screen.getByText('Complex')).toBeInTheDocument();
     });
 
@@ -123,7 +138,9 @@ describe('DetailPanel', () => {
         complexity: 85,
       };
 
-      render(<DetailPanel component={veryComplexComponent} onClose={mockOnClose} />);
+      render(
+        <DetailPanel component={veryComplexComponent} onClose={mockOnClose} />
+      );
       expect(screen.getByText('Very Complex')).toBeInTheDocument();
     });
   });
@@ -171,7 +188,9 @@ describe('DetailPanel', () => {
         hooks: [],
       };
 
-      render(<DetailPanel component={noHooksComponent} onClose={mockOnClose} />);
+      render(
+        <DetailPanel component={noHooksComponent} onClose={mockOnClose} />
+      );
       expect(screen.queryByText(/React Hooks/)).not.toBeInTheDocument();
     });
   });
@@ -210,7 +229,9 @@ describe('DetailPanel', () => {
         propsInfo: undefined,
       };
 
-      render(<DetailPanel component={noPropsInfoComponent} onClose={mockOnClose} />);
+      render(
+        <DetailPanel component={noPropsInfoComponent} onClose={mockOnClose} />
+      );
       expect(screen.queryByText(/Props \(/)).not.toBeInTheDocument();
     });
   });
@@ -227,7 +248,8 @@ describe('DetailPanel', () => {
 
     it('reactとreact-domは外部ライブラリに含まれない', () => {
       render(<DetailPanel component={mockComponent} onClose={mockOnClose} />);
-      const externalLibSection = screen.getByText('External Libraries').parentElement;
+      const externalLibSection =
+        screen.getByText('External Libraries').parentElement;
 
       // reactの場合は、外部ライブラリセクションに表示されないことを確認
       expect(externalLibSection?.textContent).not.toContain('react');
@@ -238,12 +260,21 @@ describe('DetailPanel', () => {
         ...mockComponent,
         imports: [
           // ローカルインポートのみ
-          { source: './Button', specifiers: ['Button'], isReactComponent: true },
+          {
+            source: './Button',
+            specifiers: ['Button'],
+            isReactComponent: true,
+          },
           { source: './Icon', specifiers: ['Icon'], isReactComponent: true },
         ],
       };
 
-      render(<DetailPanel component={noExternalLibsComponent} onClose={mockOnClose} />);
+      render(
+        <DetailPanel
+          component={noExternalLibsComponent}
+          onClose={mockOnClose}
+        />
+      );
 
       // "No external libraries" メッセージを確認
       expect(screen.getByText('No external libraries')).toBeInTheDocument();
@@ -286,7 +317,9 @@ describe('DetailPanel', () => {
         propsCount: 0,
       };
 
-      render(<DetailPanel component={minimalComponent} onClose={mockOnClose} />);
+      render(
+        <DetailPanel component={minimalComponent} onClose={mockOnClose} />
+      );
 
       expect(screen.getByText('Minimal')).toBeInTheDocument();
       expect(screen.getByText('No dependencies')).toBeInTheDocument();
@@ -299,7 +332,12 @@ describe('DetailPanel', () => {
         complexity: 0,
       };
 
-      render(<DetailPanel component={zeroComplexityComponent} onClose={mockOnClose} />);
+      render(
+        <DetailPanel
+          component={zeroComplexityComponent}
+          onClose={mockOnClose}
+        />
+      );
       expect(screen.getByText('0 / 100')).toBeInTheDocument();
       expect(screen.getByText('Simple')).toBeInTheDocument();
     });
@@ -310,7 +348,9 @@ describe('DetailPanel', () => {
         complexity: 100,
       };
 
-      render(<DetailPanel component={maxComplexityComponent} onClose={mockOnClose} />);
+      render(
+        <DetailPanel component={maxComplexityComponent} onClose={mockOnClose} />
+      );
       expect(screen.getByText('100 / 100')).toBeInTheDocument();
       expect(screen.getByText('Very Complex')).toBeInTheDocument();
     });

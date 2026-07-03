@@ -7,20 +7,35 @@ type MetricsDashboardProps = {
   onClose: () => void;
 };
 
-export default function MetricsDashboard({ metrics, onClose }: MetricsDashboardProps) {
+export default function MetricsDashboard({
+  metrics,
+  onClose,
+}: MetricsDashboardProps) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto m-4">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-900">Project Metrics Dashboard</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Project Metrics Dashboard
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
             aria-label="Close dashboard"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -29,28 +44,38 @@ export default function MetricsDashboard({ metrics, onClose }: MetricsDashboardP
         <div className="px-6 py-6 space-y-8">
           {/* Overview Cards */}
           <section>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Overview</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Overview
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                <p className="text-sm text-blue-600 font-medium">Total Components</p>
+                <p className="text-sm text-blue-600 font-medium">
+                  Total Components
+                </p>
                 <p className="text-3xl font-bold text-blue-900 mt-1">
                   {metrics.totalComponents}
                 </p>
               </div>
               <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                <p className="text-sm text-purple-600 font-medium">Custom Hooks</p>
+                <p className="text-sm text-purple-600 font-medium">
+                  Custom Hooks
+                </p>
                 <p className="text-3xl font-bold text-purple-900 mt-1">
                   {metrics.totalHooks}
                 </p>
               </div>
               <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                <p className="text-sm text-green-600 font-medium">Avg Complexity</p>
+                <p className="text-sm text-green-600 font-medium">
+                  Avg Complexity
+                </p>
                 <p className="text-3xl font-bold text-green-900 mt-1">
                   {metrics.averageComplexity}
                 </p>
               </div>
               <div className="bg-red-50 rounded-lg p-4 border border-red-200">
-                <p className="text-sm text-red-600 font-medium">Circular Deps</p>
+                <p className="text-sm text-red-600 font-medium">
+                  Circular Deps
+                </p>
                 <p className="text-3xl font-bold text-red-900 mt-1">
                   {metrics.circularDependencies}
                 </p>
@@ -60,7 +85,9 @@ export default function MetricsDashboard({ metrics, onClose }: MetricsDashboardP
 
           {/* Complexity Distribution */}
           <section>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Complexity Distribution</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Complexity Distribution
+            </h3>
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between items-center mb-1">
@@ -162,7 +189,10 @@ export default function MetricsDashboard({ metrics, onClose }: MetricsDashboardP
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {metrics.topComplexComponents.map((component, index) => (
-                    <tr key={index} className="hover:bg-gray-100 transition-colors">
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-100 transition-colors"
+                    >
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
                         #{index + 1}
                       </td>
@@ -178,10 +208,10 @@ export default function MetricsDashboard({ metrics, onClose }: MetricsDashboardP
                             component.complexity <= 30
                               ? 'bg-green-100 text-green-800'
                               : component.complexity <= 60
-                              ? 'bg-blue-100 text-blue-800'
-                              : component.complexity <= 80
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-orange-100 text-orange-800'
+                                ? 'bg-blue-100 text-blue-800'
+                                : component.complexity <= 80
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-orange-100 text-orange-800'
                           }`}
                         >
                           {component.complexity}
@@ -219,7 +249,10 @@ export default function MetricsDashboard({ metrics, onClose }: MetricsDashboardP
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {metrics.mostDependedOn.map((component, index) => (
-                    <tr key={index} className="hover:bg-gray-100 transition-colors">
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-100 transition-colors"
+                    >
                       <td className="px-4 py-3 text-sm font-medium text-gray-900">
                         #{index + 1}
                       </td>

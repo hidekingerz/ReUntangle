@@ -34,7 +34,9 @@ describe('GraphBuilder', () => {
     it('シンプルな依存関係グラフを構築できること', () => {
       const components: ComponentInfo[] = [
         createComponent('1', 'ComponentA', 'src/ComponentA.tsx', []),
-        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', ['ComponentA']),
+        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', [
+          'ComponentA',
+        ]),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -54,7 +56,10 @@ describe('GraphBuilder', () => {
       const components: ComponentInfo[] = [
         createComponent('1', 'ComponentA', 'src/ComponentA.tsx', []),
         createComponent('2', 'ComponentB', 'src/ComponentB.tsx', []),
-        createComponent('3', 'ComponentC', 'src/ComponentC.tsx', ['ComponentA', 'ComponentB']),
+        createComponent('3', 'ComponentC', 'src/ComponentC.tsx', [
+          'ComponentA',
+          'ComponentB',
+        ]),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -69,7 +74,9 @@ describe('GraphBuilder', () => {
 
     it('自己依存を正しく処理できること', () => {
       const components: ComponentInfo[] = [
-        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', ['ComponentA']),
+        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', [
+          'ComponentA',
+        ]),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -81,7 +88,9 @@ describe('GraphBuilder', () => {
 
     it('存在しない依存関係を処理できること', () => {
       const components: ComponentInfo[] = [
-        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', ['NonExistentComponent']),
+        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', [
+          'NonExistentComponent',
+        ]),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -93,8 +102,12 @@ describe('GraphBuilder', () => {
     it('線形の依存関係チェーンの深さを正しく計算できること', () => {
       const components: ComponentInfo[] = [
         createComponent('1', 'ComponentA', 'src/ComponentA.tsx', []),
-        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', ['ComponentA']),
-        createComponent('3', 'ComponentC', 'src/ComponentC.tsx', ['ComponentB']),
+        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', [
+          'ComponentA',
+        ]),
+        createComponent('3', 'ComponentC', 'src/ComponentC.tsx', [
+          'ComponentB',
+        ]),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -113,7 +126,10 @@ describe('GraphBuilder', () => {
       // Simulate a component that imports the same dependency multiple times
       const components: ComponentInfo[] = [
         createComponent('1', 'ComponentA', 'src/ComponentA.tsx', []),
-        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', ['ComponentA', 'ComponentA']),
+        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', [
+          'ComponentA',
+          'ComponentA',
+        ]),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -127,7 +143,13 @@ describe('GraphBuilder', () => {
     it('依存関係グラフをReact Flow形式に変換できること', () => {
       const components: ComponentInfo[] = [
         createComponent('1', 'ComponentA', 'src/ComponentA.tsx', [], 30),
-        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', ['ComponentA'], 60),
+        createComponent(
+          '2',
+          'ComponentB',
+          'src/ComponentB.tsx',
+          ['ComponentA'],
+          60
+        ),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -169,10 +191,18 @@ describe('GraphBuilder', () => {
       // Standard (50) with dependents -> Blue
       // Complex (70) with dependents -> Yellow
       // VeryComplex (90) with dependents -> Orange
-      const simpleNode = nodes.find((n) => n.data.componentInfo?.name === 'Simple')!;
-      const standardNode = nodes.find((n) => n.data.componentInfo?.name === 'Standard')!;
-      const complexNode = nodes.find((n) => n.data.componentInfo?.name === 'Complex')!;
-      const veryComplexNode = nodes.find((n) => n.data.componentInfo?.name === 'VeryComplex')!;
+      const simpleNode = nodes.find(
+        (n) => n.data.componentInfo?.name === 'Simple'
+      )!;
+      const standardNode = nodes.find(
+        (n) => n.data.componentInfo?.name === 'Standard'
+      )!;
+      const complexNode = nodes.find(
+        (n) => n.data.componentInfo?.name === 'Complex'
+      )!;
+      const veryComplexNode = nodes.find(
+        (n) => n.data.componentInfo?.name === 'VeryComplex'
+      )!;
 
       expect(simpleNode.style?.backgroundColor).toBe('#8b5cf6'); // Purple (root)
       expect(standardNode.style?.backgroundColor).toBe('#3b82f6'); // Blue
@@ -209,8 +239,12 @@ describe('GraphBuilder', () => {
 
     it('循環依存を赤色とボーダーでマークできること', () => {
       const components: ComponentInfo[] = [
-        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', ['ComponentB']),
-        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', ['ComponentA']),
+        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', [
+          'ComponentB',
+        ]),
+        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', [
+          'ComponentA',
+        ]),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -226,7 +260,10 @@ describe('GraphBuilder', () => {
     it('強い依存関係のエッジをアニメーション表示できること', () => {
       const components: ComponentInfo[] = [
         createComponent('1', 'ComponentA', 'src/ComponentA.tsx', []),
-        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', ['ComponentA', 'ComponentA']),
+        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', [
+          'ComponentA',
+          'ComponentA',
+        ]),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -240,9 +277,30 @@ describe('GraphBuilder', () => {
   describe('メトリクスの計算', () => {
     it('シンプルなグラフの正しいメトリクスを計算できること', () => {
       const components: ComponentInfo[] = [
-        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', [], 25, 'function'),
-        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', ['ComponentA'], 50, 'function'),
-        createComponent('3', 'useCustomHook', 'src/useCustomHook.ts', [], 35, 'hook'),
+        createComponent(
+          '1',
+          'ComponentA',
+          'src/ComponentA.tsx',
+          [],
+          25,
+          'function'
+        ),
+        createComponent(
+          '2',
+          'ComponentB',
+          'src/ComponentB.tsx',
+          ['ComponentA'],
+          50,
+          'function'
+        ),
+        createComponent(
+          '3',
+          'useCustomHook',
+          'src/useCustomHook.ts',
+          [],
+          35,
+          'hook'
+        ),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -311,8 +369,12 @@ describe('GraphBuilder', () => {
 
     it('循環依存をカウントできること', () => {
       const components: ComponentInfo[] = [
-        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', ['ComponentB']),
-        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', ['ComponentA']),
+        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', [
+          'ComponentB',
+        ]),
+        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', [
+          'ComponentA',
+        ]),
         createComponent('3', 'ComponentC', 'src/ComponentC.tsx', []),
       ];
 
@@ -324,7 +386,13 @@ describe('GraphBuilder', () => {
 
     it('トップリストを10項目に制限すること', () => {
       const components: ComponentInfo[] = Array.from({ length: 20 }, (_, i) =>
-        createComponent(`${i}`, `Component${i}`, `src/Component${i}.tsx`, [], i * 5)
+        createComponent(
+          `${i}`,
+          `Component${i}`,
+          `src/Component${i}.tsx`,
+          [],
+          i * 5
+        )
       );
 
       const graph = graphBuilder.buildGraph(components);
@@ -338,8 +406,12 @@ describe('GraphBuilder', () => {
   describe('循環依存の検出', () => {
     it('シンプルな循環依存を検出できること', () => {
       const components: ComponentInfo[] = [
-        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', ['ComponentB']),
-        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', ['ComponentA']),
+        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', [
+          'ComponentB',
+        ]),
+        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', [
+          'ComponentA',
+        ]),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -354,9 +426,15 @@ describe('GraphBuilder', () => {
 
     it('複雑な循環依存チェーンを検出できること', () => {
       const components: ComponentInfo[] = [
-        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', ['ComponentB']),
-        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', ['ComponentC']),
-        createComponent('3', 'ComponentC', 'src/ComponentC.tsx', ['ComponentA']),
+        createComponent('1', 'ComponentA', 'src/ComponentA.tsx', [
+          'ComponentB',
+        ]),
+        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', [
+          'ComponentC',
+        ]),
+        createComponent('3', 'ComponentC', 'src/ComponentC.tsx', [
+          'ComponentA',
+        ]),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -371,8 +449,12 @@ describe('GraphBuilder', () => {
     it('線形チェーンでは循環依存を検出しないこと', () => {
       const components: ComponentInfo[] = [
         createComponent('1', 'ComponentA', 'src/ComponentA.tsx', []),
-        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', ['ComponentA']),
-        createComponent('3', 'ComponentC', 'src/ComponentC.tsx', ['ComponentB']),
+        createComponent('2', 'ComponentB', 'src/ComponentB.tsx', [
+          'ComponentA',
+        ]),
+        createComponent('3', 'ComponentC', 'src/ComponentC.tsx', [
+          'ComponentB',
+        ]),
       ];
 
       const graph = graphBuilder.buildGraph(components);
@@ -455,7 +537,12 @@ describe('GraphBuilder', () => {
       const components: ComponentInfo[] = [
         createComponent('0', 'Popular', 'src/Popular.tsx', []),
         ...Array.from({ length: 12 }, (_, i) =>
-          createComponent(`${i + 1}`, `Component${i}`, `src/Component${i}.tsx`, ['Popular'])
+          createComponent(
+            `${i + 1}`,
+            `Component${i}`,
+            `src/Component${i}.tsx`,
+            ['Popular']
+          )
         ),
       ];
 
@@ -478,7 +565,9 @@ describe('GraphBuilder', () => {
 
       // Should have orange border
       const border = popularFlowNode?.style?.border;
-      expect(typeof border === 'string' && border.includes('#f97316')).toBe(true);
+      expect(typeof border === 'string' && border.includes('#f97316')).toBe(
+        true
+      );
     });
 
     it('未使用コンポーネントを検出できること', () => {
@@ -530,7 +619,9 @@ describe('GraphBuilder', () => {
         createComponent('6', 'F', 'src/F.tsx', ['TargetComponent']),
         // Create high coupling (>= 10 dependents)
         ...Array.from({ length: 10 }, (_, i) =>
-          createComponent(`dep${i}`, `Dep${i}`, `src/Dep${i}.tsx`, ['TargetComponent'])
+          createComponent(`dep${i}`, `Dep${i}`, `src/Dep${i}.tsx`, [
+            'TargetComponent',
+          ])
         ),
       ];
 

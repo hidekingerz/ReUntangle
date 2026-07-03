@@ -60,13 +60,13 @@ npm run dev
 
 ## 🛠 技術スタック
 
-- **Next.js 15.5.3** - Reactフレームワーク
-- **React 19.1.0** - UIライブラリ
-- **TypeScript 5.9.3** - 型安全性
-- **@xyflow/react 12.8.4** - グラフ可視化
-- **Babel Parser 7.25+** - ASTパース
-- **Tailwind CSS 3.4+** - スタイリング
-- **Vitest 3.2.4** - テスト
+- **Next.js 16.2.10** - Reactフレームワーク
+- **React 19.2.7** - UIライブラリ
+- **TypeScript 6.0.3** - 型安全性
+- **@xyflow/react 12.11.1** - グラフ可視化
+- **Babel Parser 8.0+** - ASTパース
+- **Tailwind CSS 4.3+** - スタイリング
+- **Vitest 4.1.9** - テスト
 
 ## 📁 プロジェクト構造
 

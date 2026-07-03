@@ -43,7 +43,14 @@ describe('useGraphFilter', () => {
     createMockNode('3', 'Footer', 'src/components/Footer.tsx', 35, 'function'),
     createMockNode('4', 'useAuth', 'src/hooks/useAuth.ts', 55, 'hook'),
     createMockNode('5', 'Modal', 'src/components/Modal.jsx', 65, 'class'),
-    createMockNode('6', 'UnusedComponent', 'src/components/Unused.tsx', 20, 'function', 0),
+    createMockNode(
+      '6',
+      'UnusedComponent',
+      'src/components/Unused.tsx',
+      20,
+      'function',
+      0
+    ),
   ];
 
   const mockEdges: Edge[] = [
@@ -87,13 +94,19 @@ describe('useGraphFilter', () => {
         useGraphFilter({
           nodes: mockNodes,
           edges: mockEdges,
-          searchOptions: { ...defaultSearchOptions, query: 'button', searchIn: 'name' },
+          searchOptions: {
+            ...defaultSearchOptions,
+            query: 'button',
+            searchIn: 'name',
+          },
           filterOptions: defaultFilterOptions,
         })
       );
 
       expect(result.current.filteredNodes).toHaveLength(1);
-      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe('Button');
+      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe(
+        'Button'
+      );
       expect(result.current.matchedNodeIds.has('1')).toBe(true);
     });
 
@@ -102,13 +115,19 @@ describe('useGraphFilter', () => {
         useGraphFilter({
           nodes: mockNodes,
           edges: mockEdges,
-          searchOptions: { ...defaultSearchOptions, query: 'hooks', searchIn: 'path' },
+          searchOptions: {
+            ...defaultSearchOptions,
+            query: 'hooks',
+            searchIn: 'path',
+          },
           filterOptions: defaultFilterOptions,
         })
       );
 
       expect(result.current.filteredNodes).toHaveLength(1);
-      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe('useAuth');
+      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe(
+        'useAuth'
+      );
     });
 
     it('名前とパスの両方で検索する', () => {
@@ -116,13 +135,19 @@ describe('useGraphFilter', () => {
         useGraphFilter({
           nodes: mockNodes,
           edges: mockEdges,
-          searchOptions: { ...defaultSearchOptions, query: 'Header', searchIn: 'both' },
+          searchOptions: {
+            ...defaultSearchOptions,
+            query: 'Header',
+            searchIn: 'both',
+          },
           filterOptions: defaultFilterOptions,
         })
       );
 
       expect(result.current.filteredNodes).toHaveLength(1);
-      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe('Header');
+      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe(
+        'Header'
+      );
     });
 
     it('正規表現検索をサポートする', () => {
@@ -140,7 +165,9 @@ describe('useGraphFilter', () => {
       );
 
       expect(result.current.filteredNodes).toHaveLength(1);
-      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe('useAuth');
+      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe(
+        'useAuth'
+      );
     });
 
     it('不正な正規表現を適切に処理する', () => {
@@ -177,10 +204,11 @@ describe('useGraphFilter', () => {
       );
 
       expect(result.current.filteredNodes).toHaveLength(2);
-      expect(result.current.filteredNodes.map((n) => n.data.componentInfo.name).sort()).toEqual([
-        'Header',
-        'useAuth',
-      ]);
+      expect(
+        result.current.filteredNodes
+          .map((n) => n.data.componentInfo.name)
+          .sort()
+      ).toEqual(['Header', 'useAuth']);
     });
 
     it('コンポーネントタイプでフィルタする', () => {
@@ -197,7 +225,9 @@ describe('useGraphFilter', () => {
       );
 
       expect(result.current.filteredNodes).toHaveLength(1);
-      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe('useAuth');
+      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe(
+        'useAuth'
+      );
     });
 
     it('複数のコンポーネントタイプでフィルタする', () => {
@@ -214,10 +244,11 @@ describe('useGraphFilter', () => {
       );
 
       expect(result.current.filteredNodes).toHaveLength(2);
-      expect(result.current.filteredNodes.map((n) => n.data.componentInfo.name).sort()).toEqual([
-        'Modal',
-        'useAuth',
-      ]);
+      expect(
+        result.current.filteredNodes
+          .map((n) => n.data.componentInfo.name)
+          .sort()
+      ).toEqual(['Modal', 'useAuth']);
     });
 
     it('ファイル拡張子でフィルタする', () => {
@@ -234,7 +265,9 @@ describe('useGraphFilter', () => {
       );
 
       expect(result.current.filteredNodes).toHaveLength(1);
-      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe('useAuth');
+      expect(result.current.filteredNodes[0].data.componentInfo.name).toBe(
+        'useAuth'
+      );
     });
 
     it('showUnusedがfalseの場合、未使用のコンポーネントを非表示にする', () => {
@@ -252,7 +285,9 @@ describe('useGraphFilter', () => {
 
       expect(result.current.filteredNodes).toHaveLength(5);
       expect(
-        result.current.filteredNodes.find((n) => n.data.componentInfo.name === 'UnusedComponent')
+        result.current.filteredNodes.find(
+          (n) => n.data.componentInfo.name === 'UnusedComponent'
+        )
       ).toBeUndefined();
     });
   });
@@ -263,7 +298,11 @@ describe('useGraphFilter', () => {
         useGraphFilter({
           nodes: mockNodes,
           edges: mockEdges,
-          searchOptions: { ...defaultSearchOptions, query: 'Button', searchIn: 'name' },
+          searchOptions: {
+            ...defaultSearchOptions,
+            query: 'Button',
+            searchIn: 'name',
+          },
           filterOptions: defaultFilterOptions,
         })
       );
@@ -277,7 +316,11 @@ describe('useGraphFilter', () => {
         useGraphFilter({
           nodes: mockNodes,
           edges: mockEdges,
-          searchOptions: { ...defaultSearchOptions, query: 'components', searchIn: 'path' },
+          searchOptions: {
+            ...defaultSearchOptions,
+            query: 'components',
+            searchIn: 'path',
+          },
           filterOptions: defaultFilterOptions,
         })
       );
@@ -295,7 +338,11 @@ describe('useGraphFilter', () => {
         useGraphFilter({
           nodes: mockNodes,
           edges: mockEdges,
-          searchOptions: { ...defaultSearchOptions, query: 'components', searchIn: 'path' },
+          searchOptions: {
+            ...defaultSearchOptions,
+            query: 'components',
+            searchIn: 'path',
+          },
           filterOptions: {
             ...defaultFilterOptions,
             complexityRange: { min: 30, max: 50 },
@@ -304,10 +351,11 @@ describe('useGraphFilter', () => {
       );
 
       expect(result.current.filteredNodes).toHaveLength(2);
-      expect(result.current.filteredNodes.map((n) => n.data.componentInfo.name).sort()).toEqual([
-        'Footer',
-        'Header',
-      ]);
+      expect(
+        result.current.filteredNodes
+          .map((n) => n.data.componentInfo.name)
+          .sort()
+      ).toEqual(['Footer', 'Header']);
     });
 
     it('すべてのフィルタを同時に適用する', () => {
@@ -315,7 +363,11 @@ describe('useGraphFilter', () => {
         useGraphFilter({
           nodes: mockNodes,
           edges: mockEdges,
-          searchOptions: { ...defaultSearchOptions, query: 'src', searchIn: 'path' },
+          searchOptions: {
+            ...defaultSearchOptions,
+            query: 'src',
+            searchIn: 'path',
+          },
           filterOptions: {
             ...defaultFilterOptions,
             complexityRange: { min: 20, max: 50 },
@@ -327,12 +379,11 @@ describe('useGraphFilter', () => {
 
       // Button (25), Header (45), Footer (35), UnusedComponent (20) がマッチ - すべて.tsxの関数コンポーネント
       expect(result.current.filteredNodes).toHaveLength(4);
-      expect(result.current.filteredNodes.map((n) => n.data.componentInfo.name).sort()).toEqual([
-        'Button',
-        'Footer',
-        'Header',
-        'UnusedComponent',
-      ]);
+      expect(
+        result.current.filteredNodes
+          .map((n) => n.data.componentInfo.name)
+          .sort()
+      ).toEqual(['Button', 'Footer', 'Header', 'UnusedComponent']);
     });
   });
 
@@ -342,7 +393,11 @@ describe('useGraphFilter', () => {
         useGraphFilter({
           nodes: mockNodes,
           edges: mockEdges,
-          searchOptions: { ...defaultSearchOptions, query: 'Button', searchIn: 'name' },
+          searchOptions: {
+            ...defaultSearchOptions,
+            query: 'Button',
+            searchIn: 'name',
+          },
           filterOptions: defaultFilterOptions,
         })
       );
