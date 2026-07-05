@@ -85,15 +85,21 @@ export default function Header({
         <div className="mt-4 flex gap-6 text-sm">
           <div>
             <span className="text-gray-600">Project: </span>
-            <span className="font-medium text-gray-900">{stats.projectName}</span>
+            <span className="font-medium text-gray-900">
+              {stats.projectName}
+            </span>
           </div>
           <div>
             <span className="text-gray-600">Files Scanned: </span>
-            <span className="font-medium text-gray-900">{stats.filesScanned}</span>
+            <span className="font-medium text-gray-900">
+              {stats.filesScanned}
+            </span>
           </div>
           <div>
             <span className="text-gray-600">Components Found: </span>
-            <span className="font-medium text-gray-900">{stats.componentsFound}</span>
+            <span className="font-medium text-gray-900">
+              {stats.componentsFound}
+            </span>
           </div>
         </div>
       )}

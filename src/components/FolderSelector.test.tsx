@@ -23,8 +23,12 @@ describe('FolderSelector', () => {
     it('タイトルと説明が表示される', () => {
       render(<FolderSelector onFolderSelected={mockOnFolderSelected} />);
 
-      expect(screen.getByText('Select React Project Folder')).toBeInTheDocument();
-      expect(screen.getByText(/Choose a folder containing your React project/)).toBeInTheDocument();
+      expect(
+        screen.getByText('Select React Project Folder')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Choose a folder containing your React project/)
+      ).toBeInTheDocument();
     });
 
     it('フォルダ選択ボタンが表示される', () => {
@@ -43,21 +47,36 @@ describe('FolderSelector', () => {
 
   describe('ローディング状態', () => {
     it('isLoadingがtrueの場合、ボタンが無効化される', () => {
-      render(<FolderSelector onFolderSelected={mockOnFolderSelected} isLoading={true} />);
+      render(
+        <FolderSelector
+          onFolderSelected={mockOnFolderSelected}
+          isLoading={true}
+        />
+      );
 
       const button = screen.getByText('Analyzing...');
       expect(button).toBeDisabled();
     });
 
     it('isLoadingがtrueの場合、ボタンのテキストが変わる', () => {
-      render(<FolderSelector onFolderSelected={mockOnFolderSelected} isLoading={true} />);
+      render(
+        <FolderSelector
+          onFolderSelected={mockOnFolderSelected}
+          isLoading={true}
+        />
+      );
 
       expect(screen.getByText('Analyzing...')).toBeInTheDocument();
       expect(screen.queryByText('Select Folder')).not.toBeInTheDocument();
     });
 
     it('isLoadingがfalseの場合、ボタンが有効', () => {
-      render(<FolderSelector onFolderSelected={mockOnFolderSelected} isLoading={false} />);
+      render(
+        <FolderSelector
+          onFolderSelected={mockOnFolderSelected}
+          isLoading={false}
+        />
+      );
 
       const button = screen.getByText('Select Folder');
       expect(button).not.toBeDisabled();
@@ -66,7 +85,9 @@ describe('FolderSelector', () => {
 
   describe('フォルダ選択機能', () => {
     it('フォルダが選択されるとonFolderSelectedが呼ばれる', async () => {
-      const mockShowDirectoryPicker = vi.fn().mockResolvedValue(mockDirectoryHandle);
+      const mockShowDirectoryPicker = vi
+        .fn()
+        .mockResolvedValue(mockDirectoryHandle);
       window.showDirectoryPicker = mockShowDirectoryPicker;
 
       render(<FolderSelector onFolderSelected={mockOnFolderSelected} />);
@@ -96,7 +117,9 @@ describe('FolderSelector', () => {
       });
 
       // エラーメッセージが表示されないことを確認
-      expect(screen.queryByText(/Failed to select folder/)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Failed to select folder/)
+      ).not.toBeInTheDocument();
       expect(mockOnFolderSelected).not.toHaveBeenCalled();
     });
 
@@ -111,7 +134,9 @@ describe('FolderSelector', () => {
       fireEvent.click(button);
 
       await waitFor(() => {
-        expect(screen.getByText(/Failed to select folder: Permission denied/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Failed to select folder: Permission denied/)
+        ).toBeInTheDocument();
       });
 
       expect(mockOnFolderSelected).not.toHaveBeenCalled();
@@ -121,18 +146,22 @@ describe('FolderSelector', () => {
   describe('ブラウザサポート', () => {
     it('File System Access APIがサポートされていない場合、警告が表示される', async () => {
       // showDirectoryPicker を削除してサポートされていない状態をシミュレート
-      delete (window as Window & { showDirectoryPicker?: unknown }).showDirectoryPicker;
+      delete (window as unknown as { showDirectoryPicker?: unknown })
+        .showDirectoryPicker;
 
       render(<FolderSelector onFolderSelected={mockOnFolderSelected} />);
 
       await waitFor(() => {
         expect(screen.getByText('Browser Not Supported')).toBeInTheDocument();
-        expect(screen.getByText(/Please use a modern Chromium-based browser/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Please use a modern Chromium-based browser/)
+        ).toBeInTheDocument();
       });
     });
 
     it('APIがサポートされていない場合、ボタンが無効化される', async () => {
-      delete (window as Window & { showDirectoryPicker?: unknown }).showDirectoryPicker;
+      delete (window as unknown as { showDirectoryPicker?: unknown })
+        .showDirectoryPicker;
 
       render(<FolderSelector onFolderSelected={mockOnFolderSelected} />);
 
@@ -143,7 +172,8 @@ describe('FolderSelector', () => {
     });
 
     it('APIがサポートされていない状態では警告メッセージが既に表示されている', async () => {
-      delete (window as Window & { showDirectoryPicker?: unknown }).showDirectoryPicker;
+      delete (window as unknown as { showDirectoryPicker?: unknown })
+        .showDirectoryPicker;
 
       render(<FolderSelector onFolderSelected={mockOnFolderSelected} />);
 
@@ -175,7 +205,9 @@ describe('FolderSelector', () => {
       fireEvent.click(button);
 
       await waitFor(() => {
-        expect(screen.getByText(/Failed to select folder: First error/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Failed to select folder: First error/)
+        ).toBeInTheDocument();
       });
 
       // 2回目のクリック - 成功
@@ -186,19 +218,25 @@ describe('FolderSelector', () => {
       });
 
       // エラーメッセージが消えることを確認
-      expect(screen.queryByText(/Failed to select folder: First error/)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Failed to select folder: First error/)
+      ).not.toBeInTheDocument();
     });
   });
 
   describe('統合シナリオ', () => {
     it('サポートされているブラウザで正常に動作する', async () => {
-      const mockShowDirectoryPicker = vi.fn().mockResolvedValue(mockDirectoryHandle);
+      const mockShowDirectoryPicker = vi
+        .fn()
+        .mockResolvedValue(mockDirectoryHandle);
       window.showDirectoryPicker = mockShowDirectoryPicker;
 
       render(<FolderSelector onFolderSelected={mockOnFolderSelected} />);
 
       // タイトルとボタンが表示される
-      expect(screen.getByText('Select React Project Folder')).toBeInTheDocument();
+      expect(
+        screen.getByText('Select React Project Folder')
+      ).toBeInTheDocument();
       const button = screen.getByText('Select Folder');
       expect(button).not.toBeDisabled();
 
@@ -211,7 +249,9 @@ describe('FolderSelector', () => {
       });
 
       // エラーメッセージは表示されない
-      expect(screen.queryByText(/Failed to select folder/)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Failed to select folder/)
+      ).not.toBeInTheDocument();
     });
   });
 });

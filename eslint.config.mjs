@@ -1,6 +1,5 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 
 export default tseslint.config(
@@ -35,18 +34,12 @@ export default tseslint.config(
         },
       },
     },
-    settings: {
-      react: {
-        version: 'detect',
-      },
-    },
   },
 
   // React and TypeScript specific rules
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
-      react: reactPlugin,
       'react-hooks': reactHooksPlugin,
     },
     rules: {
@@ -57,10 +50,6 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-
-      // React rules
-      'react/react-in-jsx-scope': 'off', // Not needed in Next.js
-      'react/prop-types': 'off', // Using TypeScript for prop validation
 
       // React Hooks rules
       'react-hooks/rules-of-hooks': 'error',

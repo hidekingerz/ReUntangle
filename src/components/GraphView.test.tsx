@@ -20,7 +20,13 @@ vi.mock('@/hooks/useNodeClickHandler', () => ({
 
 // Mock ReactFlowWrapper
 vi.mock('./GraphView/ReactFlowWrapper', () => ({
-  ReactFlowWrapper: ({ nodes, edges }: { nodes: Node<FlowNodeData>[]; edges: Edge[] }) => (
+  ReactFlowWrapper: ({
+    nodes,
+    edges,
+  }: {
+    nodes: Node<FlowNodeData>[];
+    edges: Edge[];
+  }) => (
     <div data-testid="react-flow-wrapper">
       <div data-testid="wrapper-nodes">{nodes.length}</div>
       <div data-testid="wrapper-edges">{edges.length}</div>
@@ -87,23 +93,31 @@ describe('GraphView', () => {
         <GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />
       );
 
-      expect(container.querySelector('.w-full.h-full.bg-gray-50')).toBeInTheDocument();
+      expect(
+        container.querySelector('.w-full.h-full.bg-gray-50')
+      ).toBeInTheDocument();
     });
 
     it('ReactFlowWrapperがレンダリングされる', () => {
-      render(<GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />);
+      render(
+        <GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />
+      );
 
       expect(screen.getByTestId('react-flow-wrapper')).toBeInTheDocument();
     });
 
     it('正しい数のノードが渡される', () => {
-      render(<GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />);
+      render(
+        <GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />
+      );
 
       expect(screen.getByTestId('wrapper-nodes').textContent).toBe('2');
     });
 
     it('正しい数のエッジが渡される', () => {
-      render(<GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />);
+      render(
+        <GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />
+      );
 
       expect(screen.getByTestId('wrapper-edges').textContent).toBe('1');
     });
@@ -111,13 +125,17 @@ describe('GraphView', () => {
 
   describe('レイアウトタイプ', () => {
     it('treeレイアウトで動作する', () => {
-      render(<GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />);
+      render(
+        <GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />
+      );
 
       expect(screen.getByTestId('react-flow-wrapper')).toBeInTheDocument();
     });
 
     it('forceレイアウトで動作する', () => {
-      render(<GraphView nodes={mockNodes} edges={mockEdges} layoutType="force" />);
+      render(
+        <GraphView nodes={mockNodes} edges={mockEdges} layoutType="force" />
+      );
 
       expect(screen.getByTestId('react-flow-wrapper')).toBeInTheDocument();
     });
@@ -125,7 +143,9 @@ describe('GraphView', () => {
 
   describe('ハイライト機能', () => {
     it('highlightedNodeIdsが指定されていない場合、すべてのノードが通常表示される', () => {
-      render(<GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />);
+      render(
+        <GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />
+      );
 
       expect(screen.getByTestId('wrapper-nodes').textContent).toBe('2');
     });
@@ -179,7 +199,9 @@ describe('GraphView', () => {
 
   describe('ノードクリックハンドラー', () => {
     it('onNodeClickが指定されていない場合でも動作する', () => {
-      render(<GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />);
+      render(
+        <GraphView nodes={mockNodes} edges={mockEdges} layoutType="tree" />
+      );
 
       expect(screen.getByTestId('react-flow-wrapper')).toBeInTheDocument();
     });
@@ -216,21 +238,24 @@ describe('GraphView', () => {
     });
 
     it('大量のノードでもレンダリングされる', () => {
-      const manyNodes: Node<FlowNodeData>[] = Array.from({ length: 100 }, (_, i) => ({
-        id: `${i}`,
-        type: 'custom',
-        position: { x: i * 10, y: i * 10 },
-        data: {
-          ...mockNodeData,
-          label: `Component${i}`,
-          componentInfo: {
-            ...mockNodeData.componentInfo,
-            id: `${i}`,
-            name: `Component${i}`,
+      const manyNodes: Node<FlowNodeData>[] = Array.from(
+        { length: 100 },
+        (_, i) => ({
+          id: `${i}`,
+          type: 'custom',
+          position: { x: i * 10, y: i * 10 },
+          data: {
+            ...mockNodeData,
+            label: `Component${i}`,
+            componentInfo: {
+              ...mockNodeData.componentInfo,
+              id: `${i}`,
+              name: `Component${i}`,
+            },
           },
-        },
-        style: {},
-      }));
+          style: {},
+        })
+      );
 
       render(<GraphView nodes={manyNodes} edges={[]} layoutType="tree" />);
 

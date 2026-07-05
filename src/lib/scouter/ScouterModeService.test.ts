@@ -89,9 +89,7 @@ describe('ScouterModeService', () => {
     });
 
     it('should throw error if node not found', () => {
-      const nodes: Node[] = [
-        { id: 'A', position: { x: 0, y: 0 }, data: {} },
-      ];
+      const nodes: Node[] = [{ id: 'A', position: { x: 0, y: 0 }, data: {} }];
       const edges: Edge[] = [];
 
       expect(() => {

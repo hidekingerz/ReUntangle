@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import Header from './Header';
 
 describe('Header', () => {
@@ -30,7 +30,9 @@ describe('Header', () => {
       );
 
       expect(screen.getByText('ReUntangle')).toBeInTheDocument();
-      expect(screen.getByText('Visualize and untangle React component dependencies')).toBeInTheDocument();
+      expect(
+        screen.getByText('Visualize and untangle React component dependencies')
+      ).toBeInTheDocument();
     });
 
     it('グラフデータがない場合、コントロールが表示されない', () => {

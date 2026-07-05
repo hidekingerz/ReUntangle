@@ -12,7 +12,10 @@ type ReactFlowWrapperProps = {
   onNodesChange: OnNodesChange<Node<FlowNodeData>>;
   onEdgesChange: OnEdgesChange;
   onNodeClick: (event: React.MouseEvent, node: Node<FlowNodeData>) => void;
-  onNodeDoubleClick?: (event: React.MouseEvent, node: Node<FlowNodeData>) => void;
+  onNodeDoubleClick?: (
+    event: React.MouseEvent,
+    node: Node<FlowNodeData>
+  ) => void;
 };
 
 export function ReactFlowWrapper({

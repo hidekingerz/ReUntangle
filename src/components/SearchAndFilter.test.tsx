@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import SearchAndFilter from './SearchAndFilter';
 import type { SearchOptions, FilterOptions } from '@/types';
 
@@ -46,7 +46,9 @@ describe('SearchAndFilter', () => {
         />
       );
 
-      expect(screen.getByPlaceholderText('Search components by name or path...')).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText('Search components by name or path...')
+      ).toBeInTheDocument();
     });
 
     it('統計情報が表示される', () => {
@@ -99,7 +101,9 @@ describe('SearchAndFilter', () => {
         />
       );
 
-      const input = screen.getByPlaceholderText('Search components by name or path...');
+      const input = screen.getByPlaceholderText(
+        'Search components by name or path...'
+      );
       fireEvent.change(input, { target: { value: 'Button' } });
 
       expect(mockOnSearchChange).toHaveBeenCalledWith({

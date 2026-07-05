@@ -28,7 +28,9 @@ type ScouterModeState = {
 /**
  * useScouterModeフックのオプション
  */
-export type UseScouterModeOptions<T extends Record<string, unknown> = Record<string, unknown>> = {
+export type UseScouterModeOptions<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = {
   nodes: Node<T>[];
   edges: Edge[];
   onModeChange?: (isActive: boolean) => void;
@@ -39,7 +41,9 @@ export type UseScouterModeOptions<T extends Record<string, unknown> = Record<str
 /**
  * useScouterModeフックの戻り値
  */
-export type UseScouterModeReturn<T extends Record<string, unknown> = Record<string, unknown>> = {
+export type UseScouterModeReturn<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = {
   // 状態
   isScouterMode: boolean;
   centerNodeId: string | null;
@@ -80,7 +84,9 @@ export type UseScouterModeReturn<T extends Record<string, unknown> = Record<stri
  * };
  * ```
  */
-export function useScouterMode<T extends Record<string, unknown> = Record<string, unknown>>({
+export function useScouterMode<
+  T extends Record<string, unknown> = Record<string, unknown>,
+>({
   nodes,
   edges,
   onModeChange,
@@ -116,7 +122,9 @@ export function useScouterMode<T extends Record<string, unknown> = Record<string
           ...relatedNodes.dependentNodes.map((n) => n.id),
         ]);
 
-        const visibleEdgeIds = new Set(relatedNodes.relatedEdges.map((e) => e.id));
+        const visibleEdgeIds = new Set(
+          relatedNodes.relatedEdges.map((e) => e.id)
+        );
 
         setState((prev) => ({
           ...prev,
@@ -175,7 +183,9 @@ export function useScouterMode<T extends Record<string, unknown> = Record<string
           ...relatedNodes.dependentNodes.map((n) => n.id),
         ]);
 
-        const visibleEdgeIds = new Set(relatedNodes.relatedEdges.map((e) => e.id));
+        const visibleEdgeIds = new Set(
+          relatedNodes.relatedEdges.map((e) => e.id)
+        );
 
         return {
           ...prev,

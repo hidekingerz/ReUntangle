@@ -41,7 +41,9 @@ describe('CustomNode', () => {
     });
 
     it('関数コンポーネントの場合、アイコンが表示されない', () => {
-      const { container } = renderWithProvider(<CustomNode data={mockNodeData} />);
+      const { container } = renderWithProvider(
+        <CustomNode data={mockNodeData} />
+      );
       expect(container.textContent).not.toContain('⚡');
     });
   });
@@ -57,7 +59,9 @@ describe('CustomNode', () => {
         },
       };
 
-      const { container } = renderWithProvider(<CustomNode data={hookNodeData} />);
+      const { container } = renderWithProvider(
+        <CustomNode data={hookNodeData} />
+      );
       expect(container.textContent).toContain('⚡');
       expect(screen.getByText('useCustomHook')).toBeInTheDocument();
     });
@@ -126,7 +130,9 @@ describe('CustomNode', () => {
       };
 
       renderWithProvider(<CustomNode data={longNameData} />);
-      expect(screen.getByText('VeryLongComponentNameThatMightGetTruncated')).toBeInTheDocument();
+      expect(
+        screen.getByText('VeryLongComponentNameThatMightGetTruncated')
+      ).toBeInTheDocument();
     });
 
     it('短いコンポーネント名も表示される', () => {

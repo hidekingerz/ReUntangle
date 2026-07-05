@@ -4,11 +4,9 @@ import type { LayoutType } from '@/types';
 /**
  * Apply layout algorithm to nodes
  */
-export function applyLayout<T extends Record<string, unknown> = Record<string, unknown>>(
-  nodes: Node<T>[],
-  edges: Edge[],
-  layoutType: LayoutType
-): Node<T>[] {
+export function applyLayout<
+  T extends Record<string, unknown> = Record<string, unknown>,
+>(nodes: Node<T>[], edges: Edge[], layoutType: LayoutType): Node<T>[] {
   switch (layoutType) {
     case 'tree':
       return applyTreeLayout(nodes, edges);
@@ -22,7 +20,9 @@ export function applyLayout<T extends Record<string, unknown> = Record<string, u
 /**
  * Tree layout - hierarchical top-down
  */
-function applyTreeLayout<T extends Record<string, unknown> = Record<string, unknown>>(nodes: Node<T>[], edges: Edge[]): Node<T>[] {
+function applyTreeLayout<
+  T extends Record<string, unknown> = Record<string, unknown>,
+>(nodes: Node<T>[], edges: Edge[]): Node<T>[] {
   const levels: Map<string, number> = new Map();
   const childrenMap = new Map<string, string[]>();
 
@@ -87,7 +87,9 @@ function applyTreeLayout<T extends Record<string, unknown> = Record<string, unkn
 /**
  * Force-directed layout - simplified version
  */
-function applyForceLayout<T extends Record<string, unknown> = Record<string, unknown>>(nodes: Node<T>[]): Node<T>[] {
+function applyForceLayout<
+  T extends Record<string, unknown> = Record<string, unknown>,
+>(nodes: Node<T>[]): Node<T>[] {
   // Simple circular layout as a starting point
   const radius = Math.max(200, nodes.length * 30);
   const angleStep = (2 * Math.PI) / nodes.length;

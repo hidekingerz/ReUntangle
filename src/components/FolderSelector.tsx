@@ -80,8 +80,8 @@ export default function FolderSelector({
             Browser Not Supported
           </p>
           <p className="text-yellow-700 text-sm mt-1">
-            Please use a modern Chromium-based browser (Chrome, Edge, Brave, etc.)
-            to use this application.
+            Please use a modern Chromium-based browser (Chrome, Edge, Brave,
+            etc.) to use this application.
           </p>
         </div>
       )}

@@ -40,29 +40,52 @@ export function useGraphFilter({
         try {
           if (searchOptions.useRegex) {
             const regex = new RegExp(query, 'i');
-            if (searchOptions.searchIn === 'name' || searchOptions.searchIn === 'both') {
+            if (
+              searchOptions.searchIn === 'name' ||
+              searchOptions.searchIn === 'both'
+            ) {
               isMatch = isMatch || regex.test(component.name);
             }
-            if (searchOptions.searchIn === 'path' || searchOptions.searchIn === 'both') {
+            if (
+              searchOptions.searchIn === 'path' ||
+              searchOptions.searchIn === 'both'
+            ) {
               isMatch = isMatch || regex.test(component.filePath);
             }
           } else {
             const lowerQuery = query.toLowerCase();
-            if (searchOptions.searchIn === 'name' || searchOptions.searchIn === 'both') {
-              isMatch = isMatch || component.name.toLowerCase().includes(lowerQuery);
+            if (
+              searchOptions.searchIn === 'name' ||
+              searchOptions.searchIn === 'both'
+            ) {
+              isMatch =
+                isMatch || component.name.toLowerCase().includes(lowerQuery);
             }
-            if (searchOptions.searchIn === 'path' || searchOptions.searchIn === 'both') {
-              isMatch = isMatch || component.filePath.toLowerCase().includes(lowerQuery);
+            if (
+              searchOptions.searchIn === 'path' ||
+              searchOptions.searchIn === 'both'
+            ) {
+              isMatch =
+                isMatch ||
+                component.filePath.toLowerCase().includes(lowerQuery);
             }
           }
         } catch {
           // Invalid regex, treat as plain text
           const lowerQuery = query.toLowerCase();
-          if (searchOptions.searchIn === 'name' || searchOptions.searchIn === 'both') {
-            isMatch = isMatch || component.name.toLowerCase().includes(lowerQuery);
+          if (
+            searchOptions.searchIn === 'name' ||
+            searchOptions.searchIn === 'both'
+          ) {
+            isMatch =
+              isMatch || component.name.toLowerCase().includes(lowerQuery);
           }
-          if (searchOptions.searchIn === 'path' || searchOptions.searchIn === 'both') {
-            isMatch = isMatch || component.filePath.toLowerCase().includes(lowerQuery);
+          if (
+            searchOptions.searchIn === 'path' ||
+            searchOptions.searchIn === 'both'
+          ) {
+            isMatch =
+              isMatch || component.filePath.toLowerCase().includes(lowerQuery);
           }
         }
 
@@ -103,11 +126,9 @@ export function useGraphFilter({
 
       // File extension filter
       if (filterOptions.fileExtensions.length > 0) {
-        const extension = component.filePath.slice(component.filePath.lastIndexOf('.')) as
-          | '.tsx'
-          | '.jsx'
-          | '.ts'
-          | '.js';
+        const extension = component.filePath.slice(
+          component.filePath.lastIndexOf('.')
+        ) as '.tsx' | '.jsx' | '.ts' | '.js';
         if (!filterOptions.fileExtensions.includes(extension)) {
           return false;
         }
@@ -118,7 +139,9 @@ export function useGraphFilter({
         // Check if it's a root component (should always be shown)
         const fileName = component.filePath.split('/').pop() || '';
         const isRoot =
-          fileName === 'page.tsx' || fileName === 'layout.tsx' || fileName === 'route.ts';
+          fileName === 'page.tsx' ||
+          fileName === 'layout.tsx' ||
+          fileName === 'route.ts';
         if (!isRoot) {
           return false;
         }
@@ -127,7 +150,8 @@ export function useGraphFilter({
       // Circular dependency filter
       if (!filterOptions.showCircular) {
         const border = node.style?.border;
-        const hasCircularDep = typeof border === 'string' && border.includes('#dc2626');
+        const hasCircularDep =
+          typeof border === 'string' && border.includes('#dc2626');
         if (hasCircularDep) {
           return false;
         }
@@ -139,7 +163,8 @@ export function useGraphFilter({
     // Step 3: Filter edges to only show connections between visible nodes
     const filteredNodeIds = new Set(filteredNodes.map((n) => n.id));
     const filteredEdges = edges.filter(
-      (edge) => filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
+      (edge) =>
+        filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
     );
 
     // Step 4: Calculate stats

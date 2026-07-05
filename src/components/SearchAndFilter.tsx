@@ -83,7 +83,10 @@ export default function SearchAndFilter({
                 type="checkbox"
                 checked={searchOptions.useRegex}
                 onChange={(e) =>
-                  onSearchChange({ ...searchOptions, useRegex: e.target.checked })
+                  onSearchChange({
+                    ...searchOptions,
+                    useRegex: e.target.checked,
+                  })
                 }
                 className="rounded text-blue-600 focus:ring-2 focus:ring-blue-500"
               />
@@ -105,9 +108,12 @@ export default function SearchAndFilter({
 
           {/* Stats */}
           <div className="text-sm text-gray-600 px-3 py-2 bg-gray-100 rounded-lg">
-            <span className="font-semibold">{stats.filtered}</span> / {stats.total}
+            <span className="font-semibold">{stats.filtered}</span> /{' '}
+            {stats.total}
             {stats.hidden > 0 && (
-              <span className="text-gray-500 ml-1">({stats.hidden} hidden)</span>
+              <span className="text-gray-500 ml-1">
+                ({stats.hidden} hidden)
+              </span>
             )}
           </div>
         </div>
@@ -174,33 +180,44 @@ export default function SearchAndFilter({
                 Component Types
               </label>
               <div className="space-y-2">
-                {(['function', 'class', 'arrow', 'hook'] as const).map((type) => (
-                  <label key={type} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={filterOptions.componentTypes.includes(type)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          // Add type
-                          onFilterChange({
-                            ...filterOptions,
-                            componentTypes: [...filterOptions.componentTypes, type],
-                          });
-                        } else {
-                          // Remove type
-                          onFilterChange({
-                            ...filterOptions,
-                            componentTypes: filterOptions.componentTypes.filter(
-                              (t) => t !== type
-                            ),
-                          });
-                        }
-                      }}
-                      className="rounded text-blue-600 focus:ring-2 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700 capitalize">{type}</span>
-                  </label>
-                ))}
+                {(['function', 'class', 'arrow', 'hook'] as const).map(
+                  (type) => (
+                    <label
+                      key={type}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={filterOptions.componentTypes.includes(type)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            // Add type
+                            onFilterChange({
+                              ...filterOptions,
+                              componentTypes: [
+                                ...filterOptions.componentTypes,
+                                type,
+                              ],
+                            });
+                          } else {
+                            // Remove type
+                            onFilterChange({
+                              ...filterOptions,
+                              componentTypes:
+                                filterOptions.componentTypes.filter(
+                                  (t) => t !== type
+                                ),
+                            });
+                          }
+                        }}
+                        className="rounded text-blue-600 focus:ring-2 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700 capitalize">
+                        {type}
+                      </span>
+                    </label>
+                  )
+                )}
               </div>
             </div>
 
@@ -211,7 +228,10 @@ export default function SearchAndFilter({
               </label>
               <div className="space-y-2">
                 {(['.tsx', '.jsx', '.ts', '.js'] as const).map((ext) => (
-                  <label key={ext} className="flex items-center gap-2 cursor-pointer">
+                  <label
+                    key={ext}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
                     <input
                       type="checkbox"
                       checked={filterOptions.fileExtensions.includes(ext)}
@@ -220,7 +240,10 @@ export default function SearchAndFilter({
                           // Add extension
                           onFilterChange({
                             ...filterOptions,
-                            fileExtensions: [...filterOptions.fileExtensions, ext],
+                            fileExtensions: [
+                              ...filterOptions.fileExtensions,
+                              ext,
+                            ],
                           });
                         } else {
                           // Remove extension
@@ -234,7 +257,9 @@ export default function SearchAndFilter({
                       }}
                       className="rounded text-blue-600 focus:ring-2 focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700 font-mono">{ext}</span>
+                    <span className="text-sm text-gray-700 font-mono">
+                      {ext}
+                    </span>
                   </label>
                 ))}
               </div>
@@ -251,18 +276,26 @@ export default function SearchAndFilter({
                     type="checkbox"
                     checked={filterOptions.showUnused}
                     onChange={(e) =>
-                      onFilterChange({ ...filterOptions, showUnused: e.target.checked })
+                      onFilterChange({
+                        ...filterOptions,
+                        showUnused: e.target.checked,
+                      })
                     }
                     className="rounded text-blue-600 focus:ring-2 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-gray-700">Show Unused Components</span>
+                  <span className="text-sm text-gray-700">
+                    Show Unused Components
+                  </span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={filterOptions.showCircular}
                     onChange={(e) =>
-                      onFilterChange({ ...filterOptions, showCircular: e.target.checked })
+                      onFilterChange({
+                        ...filterOptions,
+                        showCircular: e.target.checked,
+                      })
                     }
                     className="rounded text-blue-600 focus:ring-2 focus:ring-blue-500"
                   />
@@ -277,7 +310,11 @@ export default function SearchAndFilter({
             <div className="flex items-end">
               <button
                 onClick={() => {
-                  onSearchChange({ query: '', searchIn: 'both', useRegex: false });
+                  onSearchChange({
+                    query: '',
+                    searchIn: 'both',
+                    useRegex: false,
+                  });
                   onFilterChange({
                     complexityRange: { min: 0, max: maxComplexity },
                     depthRange: { min: 0, max: maxDepth },
