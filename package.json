@@ -1,6 +1,6 @@
 {
   "name": "reuntangle",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "ReUntangle - Visualize and untangle React component dependencies",
   "private": true,
   "scripts": {
